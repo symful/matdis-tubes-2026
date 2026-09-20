@@ -1,0 +1,55 @@
+metadata:
+  case_id: "case_08_warga_nonton"
+  title: "Hambatan Mobil Damkar akibat Kerumunan Penonton di Gang Sempit"
+  description: "Mobil Damkar menuju lokasi kebakaran. Di tengah jalan, terjadi penumpukan warga yang menonton di Gang B."
+  author: "Kelompok 08"
+
+topology:
+  nodes:
+    - id: 0
+      label: "Pos Damkar"
+      pos: [0, 5]
+    - id: 1
+      label: "Gang A Utama"
+      pos: [3, 8]
+    - id: 2
+      label: "Gang B Sempit"
+      pos: [3, 2]
+    - id: 3
+      label: "Simpang Akhir"
+      pos: [7, 5]
+    - id: 4
+      label: "Titik Kebakaran"
+      pos: [10, 5]
+
+  edges:
+    - from: 0
+      to: 1
+      weight: 5
+    - from: 0
+      to: 2
+      weight: 2 # Awalnya terlihat lebih dekat
+    - from: 1
+      to: 2
+      weight: 4
+    - from: 1
+      to: 3
+      weight: 3
+    - from: 2
+      to: 3
+      weight: 1 # Gang B ke Simpang
+    - from: 3
+      to: 4
+      weight: 2
+
+execution_plan:
+  start_node: 0
+  goal_node: 4
+
+  # Dynamic Events Injection
+  events:
+    - step_trigger: "AFTER_INITIAL_SEARCH"
+      type: "SPECTATOR_BOTTLENECK"
+      description: "Warga membludak menonton kebakaran di Gang B (2 -> 3)"
+      target_edge: [2, 3]
+      new_weight: 50
