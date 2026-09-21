@@ -1,66 +1,69 @@
+import argparse
 import sys
-from algorithms.pathfinding.static_dijkstra import StaticDijkstra
+from pathlib import Path
+from typing import List, Optional
+
+from algorithms.registry import AlgorithmRegistry, resolve_algorithm_key
 from cases.scenario_loader import ScenarioLoader
-from config.settings import DEFAULT_YAML_SCENARIO
-from core.visualizer import SimpleGraphVisualizer
+from config.settings import DEFAULT_ALGORITHM
+from core.simulation_observers import (
+    ConsoleReportObserver,
+    TraceExportObserver,
+    VisualizerSnapshotObserver,
+)
+from core.simulation_runner import SimulationResult, SimulationRunner
+from scripts.cli_utils import collect_scenario_paths
 
 
-def run_simulation(yaml_path: str):
-    # 1. Load Scenario
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="scripts.run_simulation",
+        description="Data-driven simulator: jalankan satu, beberapa, atau seluruh skenario YAML.",
+    )
+    parser.add_argument(
+        "scenarios",
+        nargs="*",
+        help="Path file YAML dan/atau folder skenario. Kosongkan untuk memakai default/batch.",
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Jalankan seluruh skenario di folder cases/scenarios.",
+    )
+    parser.add_argument(
+        "-a",
+        "--algorithm",
+        default=None,
+        help="Registry key/alias algoritma (mis. pathfinding, spanning_tree).",
+    )
+    return parser
+
+
+def run_single(yaml_path: Path, algorithm_override: Optional[str] = None) -> SimulationResult:
     loader = ScenarioLoader(yaml_path)
     metadata = loader.get_metadata()
-    graph_model = loader.build_graph_model()
     plan = loader.get_execution_plan()
+    graph_model = loader.build_graph_model()
 
-    start_node = plan["start_node"]
-    goal_node = plan["goal_node"]
-
-    # 2. Inisialisasi Visualizer & Solver
-    viz = SimpleGraphVisualizer(graph_model.nx_graph)
-    solver = StaticDijkstra(graph_model)
-
-    print(f"=== RUNNING SIMULATION: {metadata['title']} ===")
-    print(f"Algorithm: {solver.__class__.__name__}")
-
-    # 3. Phase 1: Rute Awal
-    path_1, cost_1 = solver.run(start_node, goal_node)
-    print(f"-> Rute Awal  : {path_1} (Cost: {cost_1})")
-
-    viz.draw_snapshot(
-        title=f"Kondisi Normal - {metadata['title']}\nRute Awal: {path_1} (Cost: {cost_1})",
-        active_path=path_1,
+    algorithm_key = resolve_algorithm_key(
+        algorithm_override, plan, metadata, DEFAULT_ALGORITHM
     )
+    solver = AlgorithmRegistry.create(algorithm_key, graph_model)
 
-    # 4. Phase 2: Dynamic Event Injection
-    for event in plan.get("events", []):
-        print(f"\n[EVENT INJECTED] {event['description']}")
+    runner = SimulationRunner(solver=solver, plan=plan, metadata=metadata)
+    runner.attach(ConsoleReportObserver())
+    runner.attach(VisualizerSnapshotObserver(graph_model.nx_graph))
+    runner.attach(TraceExportObserver(solver))
+    return runner.execute()
 
-        target_edge = tuple(event["target_edge"])
-        event_data = {
-            "edge": target_edge,
-            "new_weight": event["new_weight"],
-            "start": start_node,
-            "goal": goal_node,
-        }
 
-        path_2, cost_2 = solver.handle_dynamic_event(event_data)
-        print(f"-> Rute Baru  : {path_2} (Cost: {cost_2})")
+def main(argv: Optional[List[str]] = None) -> None:
+    args = build_parser().parse_args(argv)
+    scenario_paths = collect_scenario_paths(args.scenarios, include_all=args.all)
 
-        viz.draw_snapshot(
-            title=f"Event: {event['description']}\nRute Baru: {path_2} (Cost: {cost_2})",
-            active_path=path_2,
-            highlighted_edge=target_edge,
-        )
-
-    # 5. Export Raw Trace JSON ke folder output/
-    output_filename = f"output_{metadata['case_id']}.json"
-    saved_path = solver.export_trace_json(
-        output_filename, metadata={**metadata, "algorithm": solver.__class__.__name__}
-    )
-
-    print(f"\n[SUCCESS] Quantitative Trace Log exported to: {saved_path}")
+    for yaml_path in scenario_paths:
+        run_single(yaml_path, algorithm_override=args.algorithm)
 
 
 if __name__ == "__main__":
-    yaml_file = sys.argv[1] if len(sys.argv) > 1 else str(DEFAULT_YAML_SCENARIO)
-    run_simulation(yaml_file)
+    main(sys.argv[1:])

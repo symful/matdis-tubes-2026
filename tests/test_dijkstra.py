@@ -14,7 +14,7 @@ def loaded_scenario():
 
 
 def test_dijkstra_initial_run(loaded_scenario):
-    """Memastikan Dijkstra menemukan rute terpendek awal [0, 2, 3, 4] dengan cost 5."""
+    """Memastikan Dijkstra menemukan rute terpendek awal [0, 1, 3, 4] dengan cost 6."""
     model, plan = loaded_scenario
     solver = StaticDijkstra(model)
 
@@ -23,13 +23,13 @@ def test_dijkstra_initial_run(loaded_scenario):
 
     path, cost = solver.run(start, goal)
 
-    # Ground Truth Kasus 8 Normal: 0 -> 2 (2m) -> 3 (1m) -> 4 (2m) = Total 5
-    assert path == [0, 2, 3, 4], f"Rute awal salah: {path}"
-    assert cost == 5, f"Cost awal salah: {cost}"
+    # Ground Truth Kasus 8 Normal: 0 -> 1 (2m) -> 3 (2m) -> 4 (2m) = Total 6
+    assert path == [0, 1, 3, 4], f"Rute awal salah: {path}"
+    assert cost == 6, f"Cost awal salah: {cost}"
 
 
 def test_dijkstra_dynamic_event_rerouting(loaded_scenario):
-    """Memastikan Dijkstra berhasil menghitung ulang rute memutar [0, 1, 3, 4] dengan cost 10 pasca event."""
+    """Memastikan Dijkstra berhasil menghitung ulang rute memutar [0, 1, 2, 3, 4] dengan cost 8 pasca event."""
     model, plan = loaded_scenario
     solver = StaticDijkstra(model)
 
@@ -39,7 +39,7 @@ def test_dijkstra_dynamic_event_rerouting(loaded_scenario):
     # Run Phase 1
     solver.run(start, goal)
 
-    # Run Phase 2 (Injeksi Event Kerumunan Warga di Edge 2 -> 3)
+    # Run Phase 2 (Injeksi Event Kerumunan Warga di Edge 1 -> 3)
     event = plan["events"][0]
     event_data = {
         "edge": tuple(event["target_edge"]),
@@ -50,10 +50,10 @@ def test_dijkstra_dynamic_event_rerouting(loaded_scenario):
 
     new_path, new_cost = solver.handle_dynamic_event(event_data)
 
-    # Ground Truth Pasca Event: Edge (2, 3) jadi 50.
-    # Rute memutar via Gang A: 0 -> 1 (5m) -> 3 (3m) -> 4 (2m) = Total 10
-    assert new_path == [0, 1, 3, 4], f"Rute baru pasca-event salah: {new_path}"
-    assert new_cost == 10, f"Cost baru pasca-event salah: {new_cost}"
+    # Ground Truth Pasca Event: Edge (1, 3) jadi 99.
+    # Rute memutar via Gang Mawar: 0 -> 1 (2m) -> 2 (1m) -> 3 (3m) -> 4 (2m) = Total 8
+    assert new_path == [0, 1, 2, 3, 4], f"Rute baru pasca-event salah: {new_path}"
+    assert new_cost == 8, f"Cost baru pasca-event salah: {new_cost}"
 
 
 def test_dijkstra_tracing_logs(loaded_scenario):

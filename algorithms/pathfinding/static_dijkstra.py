@@ -1,9 +1,12 @@
 import heapq
 import networkx as nx
+from algorithms.registry import AlgorithmRegistry
 from core.base_algorithm import BaseGraphAlgorithm
 
 
 class StaticDijkstra(BaseGraphAlgorithm):
+
+    SUPPORTED_EVENT_TYPES = frozenset({"DYNAMIC_EDGE_WEIGHT"})
 
     def __init__(self, graph: nx.DiGraph):
         super().__init__(graph)
@@ -100,3 +103,7 @@ class StaticDijkstra(BaseGraphAlgorithm):
         )
 
         return self.run(event_data["start"], event_data["goal"])
+
+
+AlgorithmRegistry.register("static_dijkstra", StaticDijkstra)
+AlgorithmRegistry.register_alias("pathfinding", "static_dijkstra")

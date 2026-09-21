@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import json
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from config.settings import (
     DEFAULT_INFINITY_REPRESENTATION,
@@ -13,6 +13,8 @@ from core.graph_model import SpatialGraphModel
 
 
 class BaseGraphAlgorithm(ABC):
+
+    SUPPORTED_EVENT_TYPES: Optional[frozenset] = None
 
     def __init__(self, graph_model: SpatialGraphModel):
         self.model = graph_model

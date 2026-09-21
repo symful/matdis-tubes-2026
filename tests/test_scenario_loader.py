@@ -39,6 +39,6 @@ def test_build_graph_model_integrity():
     assert len(G.edges) == 6, f"Diharapkan 6 edges, tetapi didapat {len(G.edges)}"
 
     # Audit Atribut Spasial & Label Node
-    assert G.nodes[0]["label"] == "Pos Damkar"
+    assert G.nodes[0]["label"] == "Titik Kumpul Pemukiman (Start)"
     assert "pos" in G.nodes[0]
-    assert G[0][1]["weight"] == 5
+    assert G[0][1]["weight"] == 2

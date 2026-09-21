@@ -32,35 +32,40 @@ Arsitektur proyek memisahkan tanggung jawab modul secara tegas sesuai prinsip re
 ```text
 matdis-sota-starterkit/
 ├── README.md                      # Dokumentasi & Panduan Utama
+├── TUTORIAL.md                    # Tutorial Data-Driven Simulation Runner
 ├── GLOSSARY.md                    # Panduan Kosa Kata Semantic Logging
+├── CASESS.md                      # Daftar 28 Kasus & Pemetaan Algoritma
 ├── requirements.txt               # Dependencies (networkx, pyyaml, matplotlib)
 │
 ├── config/
-│   └── settings.py                # Konfigurasi Path & Parameter Global
+│   └── settings.py                # Konfigurasi Path, Batch, & Parameter Global
 │
 ├── core/                          # Core Abstract Infrastructure
 │   ├── base_algorithm.py          # Abstract Parent Class + Quantitative Logger
 │   ├── graph_model.py             # SpatialGraphModel Wrapper
-│   ├── interfaces.py              # Interface Contracts (Protocols)
+│   ├── simulation_runner.py       # Orkestrasi Fase Simulasi + Timer
+│   ├── simulation_observers.py    # Observer Konsol, Visualizer, & Trace Export
 │   └── visualizer.py              # SimpleGraphVisualizer (Matplotlib)
 │
 ├── cases/                         # Data-Driven Scenario Management
 │   ├── scenario_loader.py         # YAML Parser to SpatialGraphModel
-│   └── scenarios/                 # Naskah Kasus YAML
-│       └── case_08_warga_nonton.yaml
+│   └── scenarios/                 # Naskah Kasus YAML (28 Kasus)
 │
 ├── algorithms/                    # Algorithm Implementations
+│   ├── registry.py                # AlgorithmRegistry (Factory + Alias Kategori)
 │   └── pathfinding/
 │       └── static_dijkstra.py     # Baseline Dijkstra Parent Implementation
 │
 ├── tests/                         # AUTOMATED TESTING & SCAFFOLDING (PyTest Ready)
 │   ├── test_scenario_loader.py    # Unit Test YAML Loader & Graph Builder
 │   ├── test_dijkstra.py           # Unit Test Kebenaran Algoritma Dijkstra
-│   └── test_scaffolding.py        # Framework Auditor Diagnostik untuk SOTA
+│   ├── test_scaffolding.py        # Framework Auditor Diagnostik untuk SOTA
+│   └── test_all_scenarios.py      # Audit Parametrized Kontrak 28 Skenario
 │
 └── scripts/                       # EXECUTION RUNNERS (Simulations & Benchmarks)
+    ├── cli_utils.py               # Resolver Path Skenario (file/folder/--all)
     ├── run_simulation.py          # Entry Point Utama: Visualisasi + Export JSON
-    └── run_benchmark.py           # Entry Point Benchmark: Ukur Runtime & Step Count
+    └── run_benchmark.py           # Entry Point Benchmark: Runtime & Step Count
 ```
 
 ---
@@ -75,9 +80,24 @@ Untuk mengeksekusi simulasi kasus, melihat grafik rute di Matplotlib, dan mengek
 # Menjalankan skenario default (case_08_warga_nonton.yaml)
 python -m scripts.run_simulation
 
-# Atau memilih file YAML skenario spesifik
+# Memilih file YAML skenario spesifik (bisa lebih dari satu)
 python -m scripts.run_simulation cases/scenarios/case_01_kobra_banjir.yaml
+python -m scripts.run_simulation cases/scenarios/case_01_kobra_banjir.yaml cases/scenarios/case_04_pasar_tumpah.yaml
+
+# Menjalankan seluruh 28 skenario sekaligus
+python -m scripts.run_simulation --all
+
+# Memilih algoritma dari registry secara eksplisit
+python -m scripts.run_simulation --all --algorithm pathfinding
 ```
+
+> **Ekstensi Algoritma (Open/Closed):** Runner tidak pernah hardcode kelas solver.
+> Algoritma dipilih via `AlgorithmRegistry` (`algorithms/registry.py`) dengan urutan:
+> argumen CLI `--algorithm` → key `algorithm:` di YAML → `DEFAULT_ALGORITHM` di `config/settings.py`.
+> Algoritma baru (mis. `spanning_tree`, `maxflow`, `coloring`) cukup mewarisi
+> `BaseGraphAlgorithm`, lalu mendaftar diri dengan
+> `AlgorithmRegistry.register("nama_algoritma", KelasAlgoritma)` di akhir modulnya.
+> Panduan lengkap: lihat [TUTORIAL.md](TUTORIAL.md).
 
 ### 2. Analisis Performa & Trade-off (`scripts/`)
 
