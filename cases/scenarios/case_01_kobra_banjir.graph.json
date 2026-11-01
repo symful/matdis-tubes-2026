@@ -1,0 +1,222 @@
+{
+  "origin": {
+    "query": "Karang Satria Green Residence 1, Papan Mas, Kab Bekasi",
+    "lat": -6.2273507,
+    "lon": 107.0406513,
+    "display_name": "Karang Satria Green Residence 1, Papan Mas, Karangsatria, Kab Bekasi, Jawa Barat, Indonesia"
+  },
+  "destination": {
+    "query": "Kantor Desa Karangsatria, Jalan Karang Satria Raya, Kab Bekasi",
+    "lat": -6.2227118,
+    "lon": 107.0352707,
+    "display_name": "Kantor Desa Karangsatria, Jalan Karang Satria Raya, Karangsatria, Kab Bekasi, Jawa Barat, 17123, Indonesia"
+  },
+  "direct": {
+    "total_distance_m": 1186.1,
+    "total_duration_min": 15.81
+  },
+  "via": {
+    "total_distance_m": 1579.3,
+    "total_duration_min": 21.05
+  },
+  "nodes": [
+    {
+      "id": 0,
+      "label": "Titik A: Karang Satria Green Residence 1",
+      "lat": -6.227389,
+      "lon": 107.040642,
+      "pos_m": [
+        -1.0,
+        -4.2
+      ]
+    },
+    {
+      "id": 1,
+      "label": "Jalan Edelweis I",
+      "lat": -6.227445,
+      "lon": 107.040888,
+      "pos_m": [
+        26.2,
+        -10.5
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Jalan Taman Raya",
+      "lat": -6.225819,
+      "lon": 107.041224,
+      "pos_m": [
+        63.4,
+        169.9
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Jalan Kampung Rawa Kalong",
+      "lat": -6.224135,
+      "lon": 107.041652,
+      "pos_m": [
+        110.7,
+        356.8
+      ]
+    },
+    {
+      "id": 4,
+      "label": "Jalan Karang Satria Raya",
+      "lat": -6.223092,
+      "lon": 107.036643,
+      "pos_m": [
+        -443.6,
+        472.5
+      ]
+    },
+    {
+      "id": 5,
+      "label": "Jalan Karang Satria Raya",
+      "lat": -6.222998,
+      "lon": 107.035182,
+      "pos_m": [
+        -605.2,
+        482.9
+      ]
+    },
+    {
+      "id": 6,
+      "label": "Titik B: Kantor Desa Karangsatria",
+      "lat": -6.222717,
+      "lon": 107.035147,
+      "pos_m": [
+        -609.1,
+        514.1
+      ]
+    },
+    {
+      "id": 7,
+      "label": "Jalan Karang Satria Raya",
+      "lat": -6.223853,
+      "lon": 107.04044,
+      "pos_m": [
+        -23.4,
+        388.1
+      ]
+    },
+    {
+      "id": 8,
+      "label": "Jalan Kav Bumi Mandiri",
+      "lat": -6.224945,
+      "lon": 107.04026,
+      "pos_m": [
+        -43.3,
+        266.9
+      ]
+    },
+    {
+      "id": 9,
+      "label": "Titik B: Kantor Desa Karangsatria",
+      "lat": -6.22549,
+      "lon": 107.040265,
+      "pos_m": [
+        -42.7,
+        206.4
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": 0,
+      "to": 1,
+      "street": "Jalan Edelweis I",
+      "distance_m": 27.9,
+      "duration_min": 0.37,
+      "corridor": "utama"
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "street": "Jalan Taman Raya",
+      "distance_m": 184.4,
+      "duration_min": 2.46,
+      "corridor": "utama"
+    },
+    {
+      "from": 2,
+      "to": 3,
+      "street": "Jalan Kampung Rawa Kalong",
+      "distance_m": 195.6,
+      "duration_min": 2.61,
+      "corridor": "utama"
+    },
+    {
+      "from": 3,
+      "to": 4,
+      "street": "Jalan Karang Satria Raya",
+      "distance_m": 570.4,
+      "duration_min": 7.61,
+      "corridor": "utama"
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "street": "Jalan Karang Satria Raya",
+      "distance_m": 162.1,
+      "duration_min": 2.16,
+      "corridor": "utama"
+    },
+    {
+      "from": 5,
+      "to": 6,
+      "street": "Jalan Lingkungan",
+      "distance_m": 45.7,
+      "duration_min": 0.61,
+      "corridor": "utama"
+    },
+    {
+      "from": 3,
+      "to": 7,
+      "street": "Jalan Karang Satria Raya",
+      "distance_m": 138.2,
+      "duration_min": 1.84,
+      "corridor": "alternatif"
+    },
+    {
+      "from": 7,
+      "to": 8,
+      "street": "Jalan Kav Bumi Mandiri",
+      "distance_m": 136.3,
+      "duration_min": 1.82,
+      "corridor": "alternatif"
+    },
+    {
+      "from": 8,
+      "to": 9,
+      "street": "Jalan Kenanga",
+      "distance_m": 60.3,
+      "duration_min": 0.8,
+      "corridor": "alternatif"
+    },
+    {
+      "from": 9,
+      "to": 8,
+      "street": "Jalan Kenanga",
+      "distance_m": 60.3,
+      "duration_min": 0.8,
+      "corridor": "alternatif"
+    },
+    {
+      "from": 8,
+      "to": 7,
+      "street": "Jalan Kav Bumi Mandiri",
+      "distance_m": 136.3,
+      "duration_min": 1.82,
+      "corridor": "alternatif"
+    },
+    {
+      "from": 7,
+      "to": 4,
+      "street": "Jalan Karang Satria Raya",
+      "distance_m": 432.2,
+      "duration_min": 5.76,
+      "corridor": "alternatif"
+    }
+  ]
+}

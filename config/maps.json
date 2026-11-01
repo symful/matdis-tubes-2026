@@ -1,0 +1,15 @@
+{
+  "provider": "openstreetmap",
+  "nominatim_endpoint": "https://nominatim.openstreetmap.org/search",
+  "osrm_endpoint": "https://routing.openstreetmap.de/routed-foot/route/v1/foot",
+  "user_agent": "matdis-tubes-kasus1-kobra/1.0 (tugas besar Matematika Diskrit Lanjut; kontak: kemal.ardian251524053@students.poliban.ac.id)",
+  "origin_query": "Karang Satria Green Residence 1, Papan Mas, Kab Bekasi",
+  "destination_query": "Kantor Desa Karangsatria, Jalan Karang Satria Raya, Kab Bekasi",
+  "via_query": "Jalan Kenanga, Karangsatria, Kab Bekasi",
+  "profile": "foot",
+  "expected_distance_m": 1200,
+  "distance_tolerance_m": 250,
+  "expected_duration_min": 15,
+  "duration_tolerance_min": 4,
+  "output_path": "cases/scenarios/case_01_kobra_banjir.graph.json"
+}
