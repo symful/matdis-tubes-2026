@@ -23,6 +23,8 @@ Kasus ini memunculkan dua masalah yang saling mengunci:
 2. Jalur evakuasi A ke B (±1,2 km, ±15 menit berjalan kaki) makin sulit dipastikan
    karena blocker ular dan sampah serta informasi ruas jalan yang belum dipetakan.
 
+---
+
 ## 2. Tujuan Analisis
 
 1. Mengidentifikasi penyebab masuknya kobra ke permukiman dengan diagram fishbone
@@ -31,6 +33,8 @@ Kasus ini memunculkan dua masalah yang saling mengunci:
    kobra, sampah, dan genangan.
 3. Menerapkan analisis top-bottom: masalah utama diturunkan ke kategori besar, lalu
    ke sub-penyebab lapangan.
+
+---
 
 ## 3. Analisis Top-Bottom
 
@@ -72,6 +76,8 @@ penyebab lalu ke sub-penyebab lapangan. Tabel lengkap tersimpan terstruktur di
 | **Tempat Berlindung** | Tumpukan sampah dan barang; Rumah warga lebih kering |
 | **Akses ke Rumah** | Celah ventilasi dan saluran air terbuka; Drainase tidak tertutup |
 
+---
+
 ## 4. Sintesis
 
 - Enam faktor penyebab kobra masuk permukiman: banjir, pergerakan kobra, kondisi
@@ -82,6 +88,8 @@ penyebab lalu ke sub-penyebab lapangan. Tabel lengkap tersimpan terstruktur di
   sekali tidak punya bypass.
 - Keduanya saling mengunci: risiko kobra masuk meningkat saat banjir meluas, sementara
   jalur evakuasi makin sulit dipastikan.
+
+---
 
 ## 5. Kesimpulan
 
@@ -95,6 +103,8 @@ penyebab lalu ke sub-penyebab lapangan. Tabel lengkap tersimpan terstruktur di
   bergerombol di Simpang Taman Raya (node 3), rute aman sementara tidak ada; setelah
   sampah dibersihkan dan kobra diusir, warga memutar lewat Jl. Kemuning Raya dan
   Jl. Mista Raya (1.593 m, 25,55 menit) sampai koridor utama pulih.
+
+---
 
 ## 6. Rekomendasi
 
@@ -124,15 +134,16 @@ Struktur graf terkurasi:
   10 → 4, berguna saat koridor utama terputus.
 - **Siklus Edelweis** (0 → 11 → 12 → 2): bypass gang lokal di dalam Green Residence 1.
 
+---
+
 ## 8. Struktur Repo
 
 ```text
 matdis-tubes-2026/
 ├── SOAL.md                     # statement soal bergaya ICPC (scoped)
 ├── README.md                   # dokumen ini
-├── TUTORIAL.md                 # cara pakai mesin dan skenario
-├── CASESS.md                   # pemetaan kasus ke algoritma dan fishbone
-├── GLOSSARY.md                 # panduan bahasa semantic logging
+├── .python-version             # 3.12
+├── requirements.txt            # networkx, pyyaml, pandas, openpyxl, pytest
 ├── config/
 │   ├── settings.py             # path, skenario default, band target fetch
 │   └── maps.json               # konfigurasi OpenStreetMap (query, band jarak)
@@ -141,25 +152,37 @@ matdis-tubes-2026/
 │   ├── fishbone_parser.py      # fishbone YAML → tabel/markdown
 │   └── scenarios/
 │       ├── case_01_kobra_banjir.yaml       # kasus tunggal, fully scoped
-│       ├── case_01_kobra_banjir.graph.json # bahan baku fetch OSM
-│       └── archive/                        # 27 kasus lama + advanced (tidak aktif)
-├── algorithms/pathfinding/static_dijkstra.py  # Dijkstra + blocker + event dispatch
-├── core/                       # graf model, runner, observers, visualizer
+│       └── case_01_kobra_banjir.graph.json # bahan baku fetch OSM
+├── algorithms/
+│   ├── registry.py             # registry algoritma + alias
+│   └── pathfinding/
+│       └── static_dijkstra.py  # Dijkstra + blocker node/ruas, event dispatch
+├── core/
+│   ├── base_algorithm.py       # base class, tracing, export JSON
+│   ├── graph_model.py          # SpatialGraphModel (NetworkX DiGraph wrapper)
+│   ├── interface.py            # protokol IGraphAlgorithm, ITraceable, IGraphVisualizer
+│   ├── simulation_runner.py    # SimulationRunner + observer hooks
+│   ├── simulation_observers.py # ConsoleReport, VisualizerSnapshot, TraceExport
+│   └── visualizer.py           # SimpleGraphVisualizer (matplotlib)
 ├── scripts/
 │   ├── run_simulation.py       # jalankan simulasi + ekspor trace JSON
-│   ├── run_benchmark.py        # runtime & step count
+│   ├── cli_utils.py            # collect_scenario_paths
 │   └── fetch_route_maps.py     # ambil rute jalan kaki dari OpenStreetMap
-├── tests/                      # pytest: loader, safe_path, fishbone, kontrak, auditor
+├── tests/
+│   ├── test_scenario_loader.py # loader, validasi, graf dua arah
+│   ├── test_fishbone_parser.py # parser 6M/non-6M, markdown
+│   ├── test_safe_path.py       # rute aman, event dinamik, tracing
+│   └── test_scaffolding.py     # auditor SOTA (SOTAScaffoldingAuditor)
 └── output/                     # trace JSON hasil simulasi
 ```
+
+---
 
 ## 9. Cara Menjalankan
 
 ```bash
 # Simulasi kasus 1 (default), ekspor trace ke output/
 python -m scripts.run_simulation
-
-# Benchmark
 
 # Ambil ulang graf dari OpenStreetMap (tanpa API key)
 python scripts/fetch_route_maps.py
@@ -168,8 +191,16 @@ python scripts/fetch_route_maps.py
 pytest
 ```
 
+CLI `scripts/run_simulation.py` menerima argumen tambahan:
+
+- `scenarios` (posisional): path file YAML dan/atau folder skenario.
+- `--all`: jalankan seluruh skenario di `cases/scenarios/`.
+- `-a`/`--algorithm`: registry key/alias algoritma (default `pathfinding`).
+
 Prioritas pemilihan algoritma: argumen CLI `--algorithm` → key `algorithm` di YAML →
 `DEFAULT_ALGORITHM` di `config/settings.py`.
+
+---
 
 ## 10. Kontrak Skenario (ringkas)
 
@@ -181,6 +212,43 @@ Prioritas pemilihan algoritma: argumen CLI `--algorithm` → key `algorithm` di 
 - Keluaran tanpa rute: `path = []`, `cost = inf` (TIDAK ADA RUTE AMAN).
 
 Detail skema dan clarifications: lihat [SOAL.md](SOAL.md).
+
+---
+
+## 11. Pengujian
+
+Suite pytest terdiri dari 4 berkas:
+
+- `test_scenario_loader.py`: loader membaca problem/entities/fishbone/sample, graf
+  dua arah menghasilkan 28 edge dari 14 ruas, validasi menolak window node tak
+  dikenal, entity_id tak terdaftar, dan target_edge tak dikenal.
+- `test_fishbone_parser.py`: tiga tabel terbaca (non-6M + dua 6M), kategori
+  non-6M lahir dari kasus, validasi 6M menolak kategori yang kurang, render
+  markdown memuat nama kategori dan penyebab.
+- `test_safe_path.py`: rute awal memperhitungkan keadaan awal (18,97 menit),
+  urutan event lengkap (5 reroute), kobra bergerombol memutus rute, sampah
+  dibersihkan belum cukup, reroute via koridor alternatif (25,55 menit),
+  blokir ruas dua arah, surge genangan dua arah, banjir surut mengembalikan
+  bobot, tracing log tercatat.
+- `test_scaffolding.py`: auditor `SOTAScaffoldingAuditor` memvalidasi struktur
+  kelas, initial run, dynamic event, dan trace integrity untuk `StaticDijkstra`.
+
+---
+
+## 12. Konfigurasi
+
+`config/settings.py` mendefinisikan:
+
+- `BASE_DIR`, `CASES_DIR`, `OUTPUT_DIR`, `TESTS_DIR`, `SCRIPTS_DIR`.
+- `DEFAULT_INFINITY_REPRESENTATION = "inf"`, `JSON_INDENT = 2`, `ENSURE_ASCII = False`.
+- `DEFAULT_YAML_SCENARIO = cases/scenarios/case_01_kobra_banjir.yaml`.
+- `DEFAULT_ALGORITHM = "pathfinding"`.
+- `DEFAULT_SCENARIO_BATCH = []` (kosong, pakai default skenario).
+- `SCENARIO_FILE_PATTERNS = ("*.yaml", "*.yml")`.
+
+`config/maps.json` menyimpan konfigurasi fetch OpenStreetMap: endpoint Nominatim
+dan OSRM foot, user agent, query origin/destination/via, band jarak dan durasi
+target, serta path output JSON.
 
 ---
 
