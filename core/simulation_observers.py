@@ -10,11 +10,19 @@ class ConsoleReportObserver(SimulationObserver):
     def on_initial_route(self, result: SimulationResult) -> None:
         print(f"=== RUNNING SIMULATION: {result.metadata['title']} ===")
         print(f"Algorithm: {result.algorithm_name}")
-        print(f"-> Rute Awal  : {result.initial_path} (Cost: {result.initial_cost})")
+        if result.initial_path:
+            print(f"-> Rute Awal  : {result.initial_path} (Cost: {result.initial_cost})")
+        else:
+            print("-> Rute Awal  : TIDAK ADA RUTE AMAN (goal terblokir sejak awal)")
 
     def on_reroute(self, result: SimulationResult, reroute: RerouteResult) -> None:
-        print(f"\n[EVENT INJECTED] {reroute.description}")
-        print(f"-> Rute Baru  : {reroute.path} (Cost: {reroute.cost})")
+        print(
+            f"\n[EVENT INJECTED] step {reroute.event_type} | {reroute.description}"
+        )
+        if reroute.path:
+            print(f"-> Rute Baru  : {reroute.path} (Cost: {reroute.cost})")
+        else:
+            print("-> Rute Baru  : TIDAK ADA RUTE AMAN (goal tidak terjangkau)")
 
     def on_event_skipped(self, result: SimulationResult, event: Dict[str, Any]) -> None:
         print(

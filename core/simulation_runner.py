@@ -8,11 +8,13 @@ from core.base_algorithm import BaseGraphAlgorithm
 @dataclass
 class RerouteResult:
     description: str
-    target_edge: Tuple[int, int]
-    new_weight: float
+    target_edge: Optional[Tuple[int, int]]
+    new_weight: Optional[float]
     path: List[int]
     cost: float
     elapsed_ms: float
+    event_type: str = ""
+    entity_id: Optional[str] = None
 
 
 @dataclass
@@ -62,6 +64,17 @@ class SimulationRunner:
         start_node = self.plan["start_node"]
         goal_node = self.plan["goal_node"]
 
+        # Event step 0 = keadaan awal (blocker statis, genangan) diterapkan
+        # sebelum rute awal dihitung.
+        events = self.plan.get("events", [])
+        initial_events = [e for e in events if e.get("step", 1) == 0]
+        timeline = [e for e in events if e.get("step", 1) != 0]
+
+        if initial_events and hasattr(self.solver, "apply_initial_state"):
+            self.solver.apply_initial_state(
+                [self._event_data(e, start_node, goal_node) for e in initial_events]
+            )
+
         t_start = time.perf_counter()
         path, cost = self.solver.run(start_node, goal_node)
         initial_elapsed_ms = (time.perf_counter() - t_start) * 1000
@@ -76,7 +89,7 @@ class SimulationRunner:
         self._notify("on_initial_route", result)
 
         supported_types = getattr(self.solver, "SUPPORTED_EVENT_TYPES", None)
-        for event in self.plan.get("events", []):
+        for event in timeline:
             if supported_types is not None and event.get("type") not in supported_types:
                 result.skipped_events.append(event)
                 self._notify("on_event_skipped", result, event)
@@ -91,13 +104,7 @@ class SimulationRunner:
     def _execute_event(
         self, event: Dict[str, Any], start_node: int, goal_node: int
     ) -> RerouteResult:
-        target_edge = tuple(event["target_edge"])
-        event_data = {
-            "edge": target_edge,
-            "new_weight": event["new_weight"],
-            "start": start_node,
-            "goal": goal_node,
-        }
+        event_data = self._event_data(event, start_node, goal_node)
 
         t_start = time.perf_counter()
         path, cost = self.solver.handle_dynamic_event(event_data)
@@ -105,12 +112,31 @@ class SimulationRunner:
 
         return RerouteResult(
             description=event.get("description", ""),
-            target_edge=target_edge,
-            new_weight=event["new_weight"],
+            target_edge=tuple(event["target_edge"]) if "target_edge" in event else None,
+            new_weight=event.get("new_weight"),
             path=path,
             cost=cost,
             elapsed_ms=elapsed_ms,
+            event_type=event.get("type", ""),
+            entity_id=event.get("entity_id"),
         )
+
+    @staticmethod
+    def _event_data(event: Dict[str, Any], start_node: int, goal_node: int) -> Dict[str, Any]:
+        data: Dict[str, Any] = {
+            "type": event.get("type"),
+            "start": start_node,
+            "goal": goal_node,
+        }
+        if "entity_id" in event:
+            data["entity_id"] = event["entity_id"]
+        if "target_edge" in event:
+            data["edge"] = tuple(event["target_edge"])
+        if "target_node" in event:
+            data["target_node"] = event["target_node"]
+        if "new_weight" in event:
+            data["new_weight"] = event["new_weight"]
+        return data
 
     def _notify(self, hook: str, *args) -> None:
         for observer in self.observers:

@@ -16,7 +16,10 @@ JSON_INDENT = 2
 ENSURE_ASCII = False
 
 # --- DEFAULT SCENARIO ---
-DEFAULT_YAML_SCENARIO = CASES_DIR / "case_08_warga_nonton.yaml"
+DEFAULT_YAML_SCENARIO = CASES_DIR / "case_01_kobra_banjir.yaml"
+
+# --- PETA JALAN (OpenStreetMap: Nominatim + OSRM foot) ---
+MAPS_CONFIG = BASE_DIR / "config" / "maps.json"
 
 # --- DEFAULT ALGORITHM (registry key atau alias kategori) ---
 DEFAULT_ALGORITHM = "pathfinding"

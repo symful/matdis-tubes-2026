@@ -1,56 +1,197 @@
 case_id: "case_01_kobra_banjir"
-title: "Evakuasi Darurat: Ular Kobra Muncul Saat Banjir (Gang B)"
-description: "Skenario evakuasi N=5 di pemukiman padat. Luapan air banjir membawa ular kobra ke Gang B, memaksa rerouting evakuasi."
+title: "Kasus 1: Kobra Banjir Path Finding"
+author: "Kelas B (033, 051, 053, 055), Kota Bekasi, Januari 2020"
+sumber:
+  - "Kompas.com (2020): Puluhan Ular Bermunculan Selama Banjir di Kota Bekasi"
+  - "Okezone.com (2020): Banjir Surut, Warga Bekasi Diteror Ular dan Buaya"
+  - "Trans TV (2020): Trauma Usai Banjir Warga Dikejutkan Kobra"
+data_source: "OpenStreetMap (Nominatim + OSRM foot), diambil dengan scripts/fetch_route_maps.py"
 
+# ---------------------------------------------------------------------------
+# Bagian 1: Ruang lingkup soal (ICPC-style scoping)
+# ---------------------------------------------------------------------------
+problem:
+  statement: >
+    Banjir melanda Komplek Perumahan Green Residence 1, Jalan Dahlia, Karang Satria,
+    Tambun Utara, Kota Bekasi (awal Januari 2020). Sarang kobra terendam sehingga kobra
+    keluar ke permukiman. Warga yang berjalan kaki dari Titik A (Perumahan Karangsatria
+    Green Residence) ke Titik B (Kantor Desa Karang Satria, plus minus 1,2 km, plus minus
+    15 menit) harus memilih jalur aman yang tidak melewati kelompok kobra, kobra diam,
+    dan tumpukan sampah, di tengah genangan banjir yang membengkakkan waktu tempuh.
+  objectives:
+    - "Mengidentifikasi penyebab masuknya kobra ke permukiman dengan diagram fishbone (Ishikawa), dua varian: kategori lahir dari kasus (non-6M) dan kategori baku 6M."
+    - "Menentukan jalur aman dari Titik A ke Titik B: lintasan berbobot waktu minimum yang tidak melewati blocker aktif."
+    - "Menunjukkan analisis top-bottom: masalah utama diturunkan ke kategori besar lalu ke sub-penyebab lapangan."
+  assumptions:
+    snakes:
+      movable: true
+      model: "Okupansi dinyatakan sebagai window from_step..to_step pada satu node. Kobra bergerombol (K1) berpindah node mengikuti window; kobra diam (K2) menempati satu node sampai diusir rescue."
+    trash:
+      movable: false
+      clearable: true
+      model: "Tumpukan sampah statis menutup penuh satu ruas sejak awal hingga clear_step; setelah dibersihkan ruas dibuka kembali."
+    flood:
+      movable: false
+      effect: "weight_surge"
+      surge_factor: 3.0
+      passable: true
+      model: "Genangan statis dalam horizon soal. Ruas tergenang tetap bisa dilalui jalan kaki, tetapi bobot waktu membengkak surge_factor kali."
+    walking:
+      speed_kmh: 4.5
+      unit_time: "menit"
+      unit_distance: "meter"
+      step_minutes: 1
+  constraints:
+    max_nodes: 50
+    max_edges: 120
+    horizon_steps: 12
+    time_weight_range_menit: [0.1, 99.0]
+    distance_range_m: [10, 800]
+    max_blockers: 5
+    start_not_goal: true
+    graph_connected_awal: true
+    guarantee_rute_awal: true
+    ruas_tertutup_total: "BLOCK_EDGE memutus ruas dua arah"
+  input_format: >
+    File YAML skenario: nodes (id, label, pos, lat, lon), edges (from, to, street,
+    weight dalam menit, distance_m, direction, flooded), problem (statement,
+    objectives, assumptions, constraints), fishbone, entities (snakes, trash, flood),
+    execution_plan (start_node, goal_node, events). Bobot weight = waktu tempuh
+    jalan kaki dalam menit pada kecepatan 4,5 km/jam.
+  output_format: >
+    Rute aman: urutan node dari start ke goal, total menit, total meter, dan daftar
+    id blocker yang dihindari. Jika goal tidak terjangkau pada keadaan aktif,
+    keluaran = TIDAK ADA RUTE AMAN (path kosong, cost = infinity).
+  clarifications:
+    - "Apakah kobra bisa bergerak? Ya. K1 bergerak mengikuti window node (datang dari sarang yang kebanjiran, ditangani rescue di akhir window). K2 diam (statis) sampai diusir."
+    - "Apakah sampah bisa bergerak? Tumpulannya statis, tetapi bisa dibersihkan (clearable). Sebelum clear_step ruas terblokir penuh, sesudahnya ruas dibuka kembali."
+    - "Apakah air banjir naik atau turun? Dalam horizon soal genangan statis, lalu surut pada step 6 (event restore bobot). Genangan hanya membengkakkan bobot, bukan blocker total."
+    - "Apakah goal selalu reachable? Tidak dijamin. Jika semua jalur ke goal terblokir, keluaran TIDAK ADA RUTE AMAN. Pada kasus ini step 2 dan step 3 memang tidak ada rute aman."
+    - "Ruas gang terakhir ke Kantor Desa (edge 6-7) adalah satu-satunya akses ke B menurut data OSM; tidak ada bypass. Blocker di ruas itu memutus B."
+    - "Out of scope: tidak ada simulasi waktu kontinu. Efek blocker berlaku sejak event ditembakkan hingga di-unblock; solver menghitung ulang rute dari Titik A setiap event (model keadaan per event, bukan time-expanded)."
+
+# ---------------------------------------------------------------------------
+# Bagian 2: Fishbone (Ishikawa), dua varian seperti yang diminta tugas
+# ---------------------------------------------------------------------------
+fishbone:
+  non6m_risk_kobra:
+    problem: "Risiko kobra masuk permukiman akibat banjir (kategori lahir dari kasus)"
+    categories:
+      - {name: "Pemicu Banjir", causes: ["Sarang kobra terendam banjir", "Air setinggi pinggang orang dewasa", "Banjir meluas ke permukiman"]}
+      - {name: "Pergerakan Kobra", causes: ["Kobra keluar dari sarang", "Bergerak ke tempat yang lebih kering", "Bergerombol di titik tertentu"]}
+      - {name: "Kondisi Habitat", causes: ["Hunian berdekatan dengan habitat kobra", "Semak di sekitar rumah jarang dirawat", "Sarang kebanjiran"]}
+      - {name: "Sumber Makanan", causes: ["Tikus hidup di tumpukan sampah", "Tumpukan barang warga jadi tempat persembunyian"]}
+      - {name: "Tempat Berlindung", causes: ["Tumpukan sampah dan barang", "Rumah warga lebih kering dari luar"]}
+      - {name: "Akses ke Rumah", causes: ["Celah ventilasi dan saluran air terbuka", "Drainase tidak tertutup", "Gapura dan pintu terbuka"]}
+  path_6m:
+    problem: "Jalur aman A ke B sulit ditentukan"
+    categories:
+      MAN: ["Warga belum tahu rute", "Warga salah pilih ruas"]
+      MACHINE: ["Peta tidak menandai ular", "Peta tidak menandai sampah"]
+      METHOD: ["Blocker tidak disaring", "Hanya mengutamakan jarak"]
+      MATERIAL: ["Sampah menutup jalan", "Tumpukan jadi blocker"]
+      ENVIRONMENT: ["Kobra berkelompok", "Ular diam jadi blocker"]
+      MEASUREMENT: ["Titik blocker tidak pasti", "Status ruas belum jelas"]
+  risk_6m:
+    problem: "Risiko kobra masuk permukiman akibat banjir"
+    categories:
+      MAN: ["Hunian dekat habitat", "Buang sampah terbuka"]
+      MACHINE: ["Celah rumah terbuka", "Drainase tidak tertutup"]
+      METHOD: ["Sampah tidak terkelola", "Semak jarang dirawat"]
+      MATERIAL: ["Tumpukan barang", "Tikus sebagai mangsa"]
+      ENVIRONMENT: ["Sarang kebanjiran", "Rumah lebih kering"]
+      MEASUREMENT: ["Celah masuk tidak didata", "Titik rawan tidak dipeta"]
+
+# ---------------------------------------------------------------------------
+# Bagian 3: Entitas lapangan (deklarasi mobilitas + window okupansi)
+# ---------------------------------------------------------------------------
+entities:
+  snakes:
+    - id: "K1"
+      label: "Kelompok kobra di Simpang Taman Raya"
+      kind: "kelompok"
+      group_size: 6
+      movable: true
+      windows:
+        - {from_step: 2, to_step: 4, node: 3}
+      note: "Datang dari sarang di kawasan Rawa Kalong yang kebanjiran; ditangani tim rescue pada step 5."
+    - id: "K2"
+      label: "Kobra diam di Simpang Kemuning Raya"
+      kind: "tunggal"
+      group_size: 1
+      movable: false
+      windows:
+        - {from_step: 0, to_step: 3, node: 9}
+      note: "Diam di dekat tumpukan sampah; diusir tim rescue pada step 4."
+  trash:
+    - id: "S1"
+      label: "Tumpukan sampah di Jl. Mista Raya"
+      edge: [9, 10]
+      coverage: "full"
+      movable: false
+      clearable: true
+      clear_step: 3
+      note: "Dibersihkan warga bersama tim rescue pada step 3."
+  flood:
+    - id: "F1"
+      label: "Genangan banjir di Jl. Kampung Rawa Kalong"
+      submerged_edges: [[4, 5]]
+      depth_cm: 80
+      surge_factor: 3.0
+      passable: true
+      window: {from_step: 0, to_step: 5}
+      note: "Banjir surut pada step 6, bobot ruas kembali normal."
+
+# ---------------------------------------------------------------------------
+# Bagian 4: Graf jalan dari OpenStreetMap (kurasi manual dari hasil fetch)
+# Bobot weight = waktu tempuh jalan kaki (menit), kecepatan 4,5 km/jam.
+# ---------------------------------------------------------------------------
 nodes:
-  - id: 0
-    label: "Pos Ronda Utama (Start)"
-    pos: [0.0, 0.0]
-  - id: 1
-    label: "Gang A (Jalur Atas)"
-    pos: [5.0, 5.0]
-  - id: 2
-    label: "Gang B (Jalur Bawah)"
-    pos: [5.0, -5.0]
-  - id: 3
-    label: "Simpul Lapangan Voli"
-    pos: [10.0, 0.0]
-  - id: 4
-    label: "Titik Kumpul Safe Zone (Goal)"
-    pos: [15.0, 0.0]
+  - {id: 0, label: "Gerbang Green Residence 1, Jl. Edelweis I (Titik A)", pos: [0.0, 0.0], lat: -6.227382, lon: 107.040610}
+  - {id: 1, label: "Simpang Edelweis I - Taman Raya", pos: [30.7, -7.0], lat: -6.2274452, lon: 107.0408877}
+  - {id: 2, label: "Simpang Taman Raya - Edelweis Raya", pos: [37.8, 22.8], lat: -6.2271769, lon: 107.0409518}
+  - {id: 3, label: "Simpang Taman Raya - Kav Bumi Mandiri", pos: [68.1, 152.8], lat: -6.2260048, lon: 107.0412259}
+  - {id: 4, label: "Simpang Kav Bumi Mandiri - Kampung Rawa Kalong", pos: [68.5, 183.5], lat: -6.2257283, lon: 107.0412293}
+  - {id: 5, label: "Simpang Kampung Rawa Kalong - Karang Satria Raya", pos: [115.2, 360.3], lat: -6.2241347, lon: 107.0416517}
+  - {id: 6, label: "Simpang Karang Satria Raya - Gang Kantor Desa", pos: [-600.8, 486.5], lat: -6.2229976, lon: 107.0351818}
+  - {id: 7, label: "Kantor Desa Karangsatria, Jl. Karang Satria Raya (Titik B)", pos: [-604.6, 517.7], lat: -6.2227165, lon: 107.0351469}
+  - {id: 8, label: "Simpang Taman Raya - Kemuning Raya", pos: [14.2, -66.8], lat: -6.2279846, lon: 107.0407391}
+  - {id: 9, label: "Simpang Kemuning Raya - Mista Raya", pos: [-227.9, -1.1], lat: -6.2273926, lon: 107.0385515}
+  - {id: 10, label: "Simpang Mista Raya - Kampung Rawa Kalong", pos: [-179.6, 119.7], lat: -6.2263035, lon: 107.0389879}
+  - {id: 11, label: "Simpang Edelweis I - Edelweis III", pos: [-43.7, 10.9], lat: -6.227284, lon: 107.0402156}
+  - {id: 12, label: "Simpang Edelweis III - Edelweis Raya", pos: [-36.9, 42.3], lat: -6.2270006, lon: 107.0402771}
 
 edges:
-  - from: 0
-    to: 1
-    weight: 5.0
-    capacity: 10.0
-  - from: 0
-    to: 2
-    weight: 2.0
-    capacity: 10.0
-  - from: 1
-    to: 3
-    weight: 3.0
-    capacity: 8.0
-  - from: 2
-    to: 3
-    weight: 1.0
-    capacity: 8.0
-  - from: 1
-    to: 2
-    weight: 2.0
-    capacity: 5.0
-  - from: 3
-    to: 4
-    weight: 2.0
-    capacity: 12.0
+  - {from: 0, to: 1, street: "Jl. Edelweis I", weight: 0.42, distance_m: 31.5, direction: "dua_arah"}
+  - {from: 1, to: 2, street: "Jl. Taman Raya", weight: 0.41, distance_m: 30.7, direction: "dua_arah"}
+  - {from: 2, to: 3, street: "Jl. Taman Raya", weight: 1.69, distance_m: 126.9, direction: "dua_arah"}
+  - {from: 3, to: 4, street: "Gang penghubung (tanpa nama)", weight: 0.33, distance_m: 24.7, direction: "dua_arah"}
+  - {from: 4, to: 5, street: "Jl. Kampung Rawa Kalong", weight: 2.15, distance_m: 161.4, direction: "dua_arah", flooded: true}
+  - {from: 5, to: 6, street: "Jl. Karang Satria Raya", weight: 9.35, distance_m: 701.0, direction: "dua_arah"}
+  - {from: 6, to: 7, street: "Gang Kantor Desa (tanpa nama)", weight: 0.32, distance_m: 24.0, direction: "dua_arah"}
+  - {from: 1, to: 8, street: "Jl. Taman Raya (selatan)", weight: 0.83, distance_m: 62.2, direction: "dua_arah"}
+  - {from: 8, to: 9, street: "Jl. Kemuning Raya", weight: 3.31, distance_m: 247.9, direction: "dua_arah"}
+  - {from: 9, to: 10, street: "Jl. Mista Raya", weight: 1.74, distance_m: 130.4, direction: "dua_arah"}
+  - {from: 10, to: 4, street: "Jl. Kampung Rawa Kalong (utara)", weight: 3.13, distance_m: 234.8, direction: "dua_arah"}
+  - {from: 0, to: 11, street: "Jl. Edelweis I (selatan)", weight: 0.60, distance_m: 45.0, direction: "dua_arah"}
+  - {from: 11, to: 12, street: "Jl. Edelweis III", weight: 0.43, distance_m: 32.2, direction: "dua_arah"}
+  - {from: 12, to: 2, street: "Jl. Edelweis Raya", weight: 1.03, distance_m: 77.1, direction: "dua_arah"}
 
 execution_plan:
   start_node: 0
-  goal_node: 4
+  goal_node: 7
+  algorithm: pathfinding
   events:
-    - step: 1
-      type: "DYNAMIC_EDGE_WEIGHT"
-      target_edge: [2, 3]
-      new_weight: 99.0
-      description: "Luapan air membawa Ular Kobra di Gang B (Edge 2 -> 3), jalur menjadi sangat berbahaya!"
+    - {step: 0, type: "BLOCK_EDGE", entity_id: "S1", target_edge: [9, 10], description: "Tumpukan sampah S1 menutup penuh Jl. Mista Raya (ruas 9-10) sejak awal."}
+    - {step: 0, type: "BLOCK_NODE", entity_id: "K2", target_node: 9, description: "Kobra diam K2 menghinggap di Simpang Kemuning Raya (node 9) sejak awal."}
+    - {step: 0, type: "DYNAMIC_EDGE_WEIGHT", entity_id: "F1", target_edge: [4, 5], new_weight: 6.45, description: "Genangan banjir di Jl. Kampung Rawa Kalong (ruas 4-5) melonjakkan waktu tempuh 3 kali, masih bisa dilalui jalan kaki."}
+    - {step: 2, type: "BLOCK_NODE", entity_id: "K1", target_node: 3, description: "Kelompok kobra K1 (6 ekor) bergerombol di Simpang Taman Raya (node 3); koridor utama terputus."}
+    - {step: 3, type: "UNBLOCK_EDGE", entity_id: "S1", target_edge: [9, 10], description: "Warga dan tim rescue membersihkan tumpukan sampah S1; Jl. Mista Raya dibuka kembali."}
+    - {step: 4, type: "UNBLOCK_NODE", entity_id: "K2", target_node: 9, description: "Tim rescue mengusir kobra diam K2 dari Simpang Kemuning Raya (node 9)."}
+    - {step: 5, type: "UNBLOCK_NODE", entity_id: "K1", target_node: 3, description: "Kelompok kobra K1 ditangani tim rescue; Simpang Taman Raya (node 3) aman kembali."}
+    - {step: 6, type: "DYNAMIC_EDGE_WEIGHT", entity_id: "F1", target_edge: [4, 5], new_weight: 2.15, description: "Banjir surut; Jl. Kampung Rawa Kalong (ruas 4-5) kembali normal."}
+
+sample:
+  note: "Contoh mini graf abstrak lengkap (masukan, keluaran, penjelasan) ada di SOAL.md bagian Contoh."
+  expected_initial: {path: [0, 1, 2, 3, 4, 5, 6, 7], total_menit: 18.97, total_meter: 1100.2}
+  expected_final: {path: [0, 1, 2, 3, 4, 5, 6, 7], total_menit: 14.67, total_meter: 1100.2}
