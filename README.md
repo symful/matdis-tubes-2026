@@ -1,275 +1,189 @@
-# Starter Kit Matematika Diskrit Lanjut: Baseline Architecture & Semantic Logging
+# Tubes Matematika Diskrit Lanjut: Kasus 1 Kobra Banjir Path Finding
 
-Proyek ini adalah *starter kit* pembelajaran dan eksperimen algoritma graf berbasis **SOLID Principles**, **Data-Driven Testing (YAML)**, dan **Quantitative-First Semantic Logging**.
+Repo ini menyelesaikan Tugas Besar Matematika Diskrit Lanjut Kasus 1: analisis
+top-bottom dengan fishbone (Ishikawa) dan penentuan jalur aman dari Titik A
+(Perumahan Karangsatria Green Residence) ke Titik B (Kantor Desa Karang Satria)
+di tengah genangan banjir, kelompok kobra, dan tumpukan sampah.
 
-Tujuan utama dari arsitektur ini adalah menyediakan fondasi kode yang modular, efisien, dan siap digunakan oleh mahasiswa untuk analisis *white-box trace* algoritma graf dasar (Baseline) hingga State-of-the-Art (SOTA).
-
----
-
-## 📐 Arsitektur & Prinsip Desain (SOLID)
-
-Arsitektur proyek memisahkan tanggung jawab modul secara tegas sesuai prinsip rekayasa perangkat lunak:
-
-1. **Single Responsibility Principle (SRP):**
-   - `core/base_algorithm.py`: Hanya mengurus abstraksi algoritma dan pencatatan log kuantitatif murni.
-   - `core/graph_model.py`: Menyediakan wrapper spasial untuk NetworkX `DiGraph`.
-   - `cases/scenario_loader.py`: Hanya mengurus pembacaan YAML dan rekonstruksi model graf.
-   - `scripts/`: Khusus untuk eksekusi simulasi, visualisasi, dan pengujian performa.
-   - `tests/`: Khusus untuk pengujian unit otomatis (*headless*) dan diagnostik *scaffolding*.
-
-2. **Open/Closed Principle (OCP) & Inheritance:**
-   - Semua algoritma pencarian harus menuruni (*inherit*) `BaseGraphAlgorithm`.
-   - Algoritma SOTA wajib menuruni kelas Baseline Parent-nya dan melakukan *override* pada metode spesifik (misalnya `handle_dynamic_event`).
-
-3. **Separation of Execution & Testing:**
-   - Folder `tests/` berjalan secara *headless* (tanpa memunculkan popup jendela GUI) agar kompatibel dengan *test runner* otomatis seperti `pytest`.
-   - Folder `scripts/` menyediakan *entry point* interaktif untuk menampilkan grafik spasial (`SimpleGraphVisualizer`) dan mengekspor log JSON.
+Statement soal bergaya ICPC ada di [SOAL.md](SOAL.md). Definisi kasus yang dibaca
+mesin ada di [cases/scenarios/case_01_kobra_banjir.yaml](cases/scenarios/case_01_kobra_banjir.yaml).
 
 ---
 
-## 📁 Struktur Direktori Terstandar (Strict Layout)
+## 1. Latar Belakang Kasus
+
+Awal Januari 2020, banjir melanda Kota Bekasi, Jawa Barat. Komplek Perumahan
+Green Residence 1, Jalan Dahlia, Karang Satria, Tambun Utara, terendam air setinggi
+pinggang orang dewasa. Sarang kobra ikut terendam sehingga kobra keluar ke
+permukiman. Warga dikejutkan ular kobra dan buaya; puluhan ular ditangani tim rescue.
+
+Kasus ini memunculkan dua masalah yang saling mengunci:
+
+1. Risiko kobra masuk permukiman meningkat seiring meluasnya banjir.
+2. Jalur evakuasi A ke B (±1,2 km, ±15 menit berjalan kaki) makin sulit dipastikan
+   karena blocker ular dan sampah serta informasi ruas jalan yang belum dipetakan.
+
+## 2. Tujuan Analisis
+
+1. Mengidentifikasi penyebab masuknya kobra ke permukiman dengan diagram fishbone
+   (Ishikawa), dua varian: kategori lahir dari kasus (non-6M) dan kategori baku (6M).
+2. Menentukan jalur aman A ke B memakai path finding (Dijkstra) dengan blocker
+   kobra, sampah, dan genangan.
+3. Menerapkan analisis top-bottom: masalah utama diturunkan ke kategori besar, lalu
+   ke sub-penyebab lapangan.
+
+## 3. Analisis Top-Bottom
+
+Masalah utama dipecah atas dua masalah besar, masing-masing diturunkan ke kategori
+penyebab lalu ke sub-penyebab lapangan. Tabel lengkap tersimpan terstruktur di
+`fishbone:` pada YAML kasus dan bisa dirender ke markdown lewat
+`cases/fishbone_parser.py`.
+
+### 3.1 Jalur aman A ke B sulit ditentukan (fishbone 6M)
+
+| Kategori | Sub-penyebab |
+|---|---|
+| **MAN** | Warga belum tahu rute; Warga salah pilih ruas |
+| **MACHINE** | Peta tidak menandai ular; Peta tidak menandai sampah |
+| **METHOD** | Blocker tidak disaring; Hanya mengutamakan jarak |
+| **MATERIAL** | Sampah menutup jalan; Tumpukan jadi blocker |
+| **ENVIRONMENT** | Kobra berkelompok; Ular diam jadi blocker |
+| **MEASUREMENT** | Titik blocker tidak pasti; Status ruas belum jelas |
+
+### 3.2 Risiko kobra masuk permukiman (fishbone 6M)
+
+| Kategori | Sub-penyebab |
+|---|---|
+| **MAN** | Hunian dekat habitat; Buang sampah terbuka |
+| **MACHINE** | Celah rumah terbuka; Drainase tidak tertutup |
+| **METHOD** | Sampah tidak terkelola; Semak jarang dirawat |
+| **MATERIAL** | Tumpukan barang; Tikus sebagai mangsa |
+| **ENVIRONMENT** | Sarang kebanjiran; Rumah lebih kering |
+| **MEASUREMENT** | Celah masuk tidak didata; Titik rawan tidak dipeta |
+
+### 3.3 Risiko kobra masuk permukiman (fishbone non-6M, kategori lahir dari kasus)
+
+| Kategori | Sub-penyebab |
+|---|---|
+| **Pemicu Banjir** | Sarang kobra terendam banjir; Air setinggi pinggang; Banjir meluas |
+| **Pergerakan Kobra** | Kobra keluar dari sarang; Bergerak ke tempat yang lebih kering; Bergerombol di titik tertentu |
+| **Kondisi Habitat** | Hunian berdekatan habitat; Semak jarang dirawat; Sarang kebanjiran |
+| **Sumber Makanan** | Tikus hidup di tumpukan sampah; Tumpukan barang jadi persembunyian |
+| **Tempat Berlindung** | Tumpukan sampah dan barang; Rumah warga lebih kering |
+| **Akses ke Rumah** | Celah ventilasi dan saluran air terbuka; Drainase tidak tertutup |
+
+## 4. Sintesis
+
+- Enam faktor penyebab kobra masuk permukiman: banjir, pergerakan kobra, kondisi
+  habitat, sumber makanan, tempat berlindung, akses ke rumah.
+- Pada sisi path finding, blocker kobra bergerombol dan sampah menutup jalan membuat
+  pilihan ruas terbatas. Data OpenStreetMap menunjukkan koridor utama A ke B
+  (1.100 m) hanya punya sedikit bypass: gang terakhir ke Kantor Desa bahkan sama
+  sekali tidak punya bypass.
+- Keduanya saling mengunci: risiko kobra masuk meningkat saat banjir meluas, sementara
+  jalur evakuasi makin sulit dipastikan.
+
+## 5. Kesimpulan
+
+- Kobra masuk permukiman akibat kombinasi pemicu banjir, habitat yang menyempit,
+  serta ketersediaan mangsa dan celah masuk rumah.
+- Jalur aman A ke B sulit ditentukan karena blocker ular dan sampah serta informasi
+  ruas jalan yang belum dipetakan.
+- Jalur aman A ke B adalah koridor utama (Jl. Edelweis I, Taman Raya, Kampung Rawa
+  Kalong, Karang Satria Raya) sepanjang 1.100 m, waktu tempuh 14,7 menit pada
+  keadaan normal, dan 18,97 menit saat genangan Rawa Kalong aktif. Saat kobra
+  bergerombol di Simpang Taman Raya (node 3), rute aman sementara tidak ada; setelah
+  sampah dibersihkan dan kobra diusir, warga memutar lewat Jl. Kemuning Raya dan
+  Jl. Mista Raya (1.593 m, 25,55 menit) sampai koridor utama pulih.
+
+## 6. Rekomendasi
+
+1. Tutup saluran air dan celah bangunan agar kobra tidak masuk rumah.
+2. Kelola sampah dan bersihkan semak di sekitar permukiman.
+3. Petakan ulang ruas jalan dengan penanda blocker (kobra dan sampah).
+4. Evakuasi mengikuti rute terpendek yang bebas blocker: koridor utama 1.100 m,
+   ±15 menit berjalan kaki ke Kantor Desa Karang Satria.
+
+---
+
+## 7. Graf Jalan (sumber data)
+
+Graf diambil dari OpenStreetMap lewat Nominatim (geocoding) dan OSRM profil foot
+(routing), dengan `scripts/fetch_route_maps.py`. Pengukuran rute langsung A ke B:
+1.186 m, 15,8 menit (OSRM foot); rute terpendek pada graf terkurasi: 1.100 m,
+14,7 menit. File tugas menyebut ±1,2 km dan ±15 menit. JSON hasil fetch tersimpan
+di `cases/scenarios/case_01_kobra_banjir.graph.json`; YAML kasus adalah hasil
+kurasi manual dari JSON itu (label simpul lokal, pembagian ruas, dan penempatan
+blocker).
+
+Struktur graf terkurasi:
+
+- **Koridor utama** (1.100 m): A (0) → Edelweis I (1) → Taman Raya (2) → Taman
+  Raya (3) → Kav Bumi Mandiri (4) → Rawa Kalong (5) → Karang Satria Raya (6) → B (7).
+- **Koridor alternatif** (1.593 m, via Kemuning Raya dan Mista Raya): 1 → 8 → 9 →
+  10 → 4, berguna saat koridor utama terputus.
+- **Siklus Edelweis** (0 → 11 → 12 → 2): bypass gang lokal di dalam Green Residence 1.
+
+## 8. Struktur Repo
 
 ```text
-matdis-sota-starterkit/
-├── README.md                      # Dokumentasi & Panduan Utama
-├── TUTORIAL.md                    # Tutorial Data-Driven Simulation Runner
-├── GLOSSARY.md                    # Panduan Kosa Kata Semantic Logging
-├── CASESS.md                      # Daftar 28 Kasus & Pemetaan Algoritma
-├── requirements.txt               # Dependencies (networkx, pyyaml, matplotlib)
-│
+matdis-tubes-2026/
+├── SOAL.md                     # statement soal bergaya ICPC (scoped)
+├── README.md                   # dokumen ini
+├── TUTORIAL.md                 # cara pakai mesin dan skenario
+├── CASESS.md                   # pemetaan kasus ke algoritma dan fishbone
+├── GLOSSARY.md                 # panduan bahasa semantic logging
 ├── config/
-│   └── settings.py                # Konfigurasi Path, Batch, & Parameter Global
-│
-├── core/                          # Core Abstract Infrastructure
-│   ├── base_algorithm.py          # Abstract Parent Class + Quantitative Logger
-│   ├── graph_model.py             # SpatialGraphModel Wrapper
-│   ├── simulation_runner.py       # Orkestrasi Fase Simulasi + Timer
-│   ├── simulation_observers.py    # Observer Konsol, Visualizer, & Trace Export
-│   └── visualizer.py              # SimpleGraphVisualizer (Matplotlib)
-│
-├── cases/                         # Data-Driven Scenario Management
-│   ├── scenario_loader.py         # YAML Parser to SpatialGraphModel
-│   └── scenarios/                 # Naskah Kasus YAML (28 Kasus)
-│
-├── algorithms/                    # Algorithm Implementations
-│   ├── registry.py                # AlgorithmRegistry (Factory + Alias Kategori)
-│   └── pathfinding/
-│       └── static_dijkstra.py     # Baseline Dijkstra Parent Implementation
-│
-├── tests/                         # AUTOMATED TESTING & SCAFFOLDING (PyTest Ready)
-│   ├── test_scenario_loader.py    # Unit Test YAML Loader & Graph Builder
-│   ├── test_dijkstra.py           # Unit Test Kebenaran Algoritma Dijkstra
-│   ├── test_scaffolding.py        # Framework Auditor Diagnostik untuk SOTA
-│   └── test_all_scenarios.py      # Audit Parametrized Kontrak 28 Skenario
-│
-└── scripts/                       # EXECUTION RUNNERS (Simulations & Benchmarks)
-    ├── cli_utils.py               # Resolver Path Skenario (file/folder/--all)
-    ├── run_simulation.py          # Entry Point Utama: Visualisasi + Export JSON
-    └── run_benchmark.py           # Entry Point Benchmark: Runtime & Step Count
+│   ├── settings.py             # path, skenario default, band target fetch
+│   └── maps.json               # konfigurasi OpenStreetMap (query, band jarak)
+├── cases/
+│   ├── scenario_loader.py      # YAML → graf + validasi kontrak scoped
+│   ├── fishbone_parser.py      # fishbone YAML → tabel/markdown
+│   └── scenarios/
+│       ├── case_01_kobra_banjir.yaml       # kasus tunggal, fully scoped
+│       ├── case_01_kobra_banjir.graph.json # bahan baku fetch OSM
+│       └── archive/                        # 27 kasus lama + advanced (tidak aktif)
+├── algorithms/pathfinding/static_dijkstra.py  # Dijkstra + blocker + event dispatch
+├── core/                       # graf model, runner, observers, visualizer
+├── scripts/
+│   ├── run_simulation.py       # jalankan simulasi + ekspor trace JSON
+│   ├── run_benchmark.py        # runtime & step count
+│   └── fetch_route_maps.py     # ambil rute jalan kaki dari OpenStreetMap
+├── tests/                      # pytest: loader, safe_path, fishbone, kontrak, auditor
+└── output/                     # trace JSON hasil simulasi
 ```
 
----
-
-## 🛠️ Cara Menggunakan Scripts & Tests
-
-### 1. Menjalankan Simulasi Spasial & Ekspor JSON (`scripts/`)
-
-Untuk mengeksekusi simulasi kasus, melihat grafik rute di Matplotlib, dan mengekspor log kuantitatif ke folder `output/`:
+## 9. Cara Menjalankan
 
 ```bash
-# Menjalankan skenario default (case_08_warga_nonton.yaml)
+# Simulasi kasus 1 (default), ekspor trace ke output/
 python -m scripts.run_simulation
 
-# Memilih file YAML skenario spesifik (bisa lebih dari satu)
-python -m scripts.run_simulation cases/scenarios/case_01_kobra_banjir.yaml
-python -m scripts.run_simulation cases/scenarios/case_01_kobra_banjir.yaml cases/scenarios/case_04_pasar_tumpah.yaml
-
-# Menjalankan seluruh 28 skenario sekaligus
-python -m scripts.run_simulation --all
-
-# Memilih algoritma dari registry secara eksplisit
-python -m scripts.run_simulation --all --algorithm pathfinding
-```
-
-> **Ekstensi Algoritma (Open/Closed):** Runner tidak pernah hardcode kelas solver.
-> Algoritma dipilih via `AlgorithmRegistry` (`algorithms/registry.py`) dengan urutan:
-> argumen CLI `--algorithm` → key `algorithm:` di YAML → `DEFAULT_ALGORITHM` di `config/settings.py`.
-> Algoritma baru (mis. `spanning_tree`, `maxflow`, `coloring`) cukup mewarisi
-> `BaseGraphAlgorithm`, lalu mendaftar diri dengan
-> `AlgorithmRegistry.register("nama_algoritma", KelasAlgoritma)` di akhir modulnya.
-> Panduan lengkap: lihat [TUTORIAL.md](TUTORIAL.md).
-
-### 2. Analisis Performa & Trade-off (`scripts/`)
-
-Untuk mengukur waktu eksekusi dalam milidetik (ms) dan total *step count* dari algoritma:
-
-```bash
+# Benchmark
 python -m scripts.run_benchmark
-```
 
-### 3. Pengujian Otomatis & Scaffolding Diagnostik (`tests/`)
+# Ambil ulang graf dari OpenStreetMap (tanpa API key)
+python scripts/fetch_route_maps.py
 
-Gunakan `pytest` untuk memastikan seluruh unit tes dan kontrak interface algoritma berjalan valid 100% tanpa bug:
-
-```bash
-# Menjalankan seluruh unit test otomatis
+# Test otomatis
 pytest
-
-# Jalankan pengujian spesifik dengan output terperinci
-pytest -v tests/test_dijkstra.py
 ```
+
+Prioritas pemilihan algoritma: argumen CLI `--algorithm` → key `algorithm` di YAML →
+`DEFAULT_ALGORITHM` di `config/settings.py`.
+
+## 10. Kontrak Skenario (ringkas)
+
+- Bobot `weight` = waktu tempuh jalan kaki (menit), kecepatan 4,5 km/jam.
+- Ruas `dua_arah` dimuat sebagai dua edge searah; blocker ruas memblokir kedua arah.
+- Event `step: 0` = keadaan awal, diterapkan sebelum rute awal dihitung.
+- Lima tipe event: `BLOCK_NODE`, `UNBLOCK_NODE`, `BLOCK_EDGE`, `UNBLOCK_EDGE`,
+  `DYNAMIC_EDGE_WEIGHT`.
+- Keluaran tanpa rute: `path = []`, `cost = inf` (TIDAK ADA RUTE AMAN).
+
+Detail skema dan clarifications: lihat [SOAL.md](SOAL.md) dan [TUTORIAL.md](TUTORIAL.md).
 
 ---
 
-## 🧪 Contoh Penggunaan & Contoh Output
-
-### 1. Contoh Script Simulasi (`scripts/run_simulation.py`)
-
-```python
-import sys
-from algorithms.pathfinding.static_dijkstra import StaticDijkstra
-from cases.scenario_loader import ScenarioLoader
-from config.settings import DEFAULT_YAML_SCENARIO
-from core.visualizer import SimpleGraphVisualizer
-
-
-def run_simulation(yaml_path: str):
-    # 1. Load Scenario & Build Spatial Graph Model
-    loader = ScenarioLoader(yaml_path)
-    metadata = loader.get_metadata()
-    graph_model = loader.build_graph_model()
-    plan = loader.get_execution_plan()
-
-    start_node = plan["start_node"]
-    goal_node = plan["goal_node"]
-
-    # 2. Inisialisasi Visualizer & Solver
-    viz = SimpleGraphVisualizer(graph_model.nx_graph)
-    solver = StaticDijkstra(graph_model)
-
-    print(f"=== RUNNING SIMULATION: {metadata['title']} ===")
-
-    # 3. Phase 1: Initial Route
-    path_1, cost_1 = solver.run(start_node, goal_node)
-    print(f"-> Rute Awal  : {path_1} (Cost: {cost_1})")
-    viz.draw_snapshot(
-        title=f"Kondisi Normal - Rute: {path_1} (Cost: {cost_1})", active_path=path_1
-    )
-
-    # 4. Phase 2: Dynamic Event Injection
-    for event in plan.get("events", []):
-        target_edge = tuple(event["target_edge"])
-        event_data = {
-            "edge": target_edge,
-            "new_weight": event["new_weight"],
-            "start": start_node,
-            "goal": goal_node,
-        }
-
-        path_2, cost_2 = solver.handle_dynamic_event(event_data)
-        print(f"-> Rute Baru  : {path_2} (Cost: {cost_2})")
-        viz.draw_snapshot(
-            title=f"Event Injected - Rute Baru: {path_2} (Cost: {cost_2})",
-            active_path=path_2,
-            highlighted_edge=target_edge,
-        )
-
-    # 5. Export Quantitative Trace JSON
-    output_filename = f"output_{metadata['case_id']}.json"
-    saved_path = solver.export_trace_json(
-        output_filename, metadata={**metadata, "algorithm": solver.__class__.__name__}
-    )
-    print(f"\n[SUCCESS] Quantitative Trace Log exported to: {saved_path}")
-
-
-if __name__ == "__main__":
-    yaml_file = sys.argv[1] if len(sys.argv) > 1 else str(DEFAULT_YAML_SCENARIO)
-    run_simulation(yaml_file)
-```
-
-### 2. Contoh Unit Test Algoritma (`tests/test_dijkstra.py`)
-
-```python
-import pytest
-from algorithms.pathfinding.static_dijkstra import StaticDijkstra
-from cases.scenario_loader import ScenarioLoader
-from config.settings import DEFAULT_YAML_SCENARIO
-
-
-@pytest.fixture
-def loaded_scenario():
-    loader = ScenarioLoader(DEFAULT_YAML_SCENARIO)
-    model = loader.build_graph_model()
-    plan = loader.get_execution_plan()
-    return model, plan
-
-
-def test_dijkstra_initial_run(loaded_scenario):
-    """Memastikan Dijkstra menemukan rute terpendek awal [0, 2, 3, 4] dengan cost 5."""
-    model, plan = loaded_scenario
-    solver = StaticDijkstra(model)
-
-    path, cost = solver.run(plan["start_node"], plan["goal_node"])
-
-    assert path == [0, 2, 3, 4]
-    assert cost == 5
-
-
-def test_dijkstra_dynamic_event_rerouting(loaded_scenario):
-    """Memastikan Dijkstra berhasil menghitung ulang rute memutar [0, 1, 3, 4] dengan cost 10 pasca event."""
-    model, plan = loaded_scenario
-    solver = StaticDijkstra(model)
-    start, goal = plan["start_node"], plan["goal_node"]
-
-    solver.run(start, goal)
-
-    event = plan["events"][0]
-    event_data = {
-        "edge": tuple(event["target_edge"]),
-        "new_weight": event["new_weight"],
-        "start": start,
-        "goal": goal,
-    }
-
-    new_path, new_cost = solver.handle_dynamic_event(event_data)
-
-    assert new_path == [0, 1, 3, 4]
-    assert new_cost == 10
-```
-
-### 3. Contoh Scaffolding Auditor SOTA (`tests/test_scaffolding.py`)
-
-Ketika mahasiswa mengimplementasikan algoritma SOTA baru (misalnya D* Lite), mereka dapat mengaudit kodingan mereka sendiri menggunakan `SOTAScaffoldingAuditor` untuk mendeteksi *error breakdown*:
-
-```python
-from tests.test_scaffolding import SOTAScaffoldingAuditor
-from config.settings import DEFAULT_YAML_SCENARIO
-# Import kelas algoritma SOTA buatan mahasiswa
-from algorithms.pathfinding.static_dijkstra import StaticDijkstra
-
-
-def test_audit_sota_algorithm():
-    auditor = SOTAScaffoldingAuditor(StaticDijkstra, str(DEFAULT_YAML_SCENARIO))
-    # Menjalankan 4 Stage Audit: Class Structure, Initial Path, Dynamic Events, & Trace Integrity
-    assert auditor.run_full_diagnostic() is True
-```
-
----
-
-## 📊 Workflow Alur Kerja Mahasiswa
-
-```text
-1. Modifikasi/Buat Algoritma Baru (algorithms/pathfinding/)
-                        │
-                        ▼
-2. Jalankan Headless Unit Test & Scaffolding (pytest)
-   -> Memastikan tidak ada bug / exception / logika rute salah
-                        │
-                        ▼
-3. Menjalankan Simulasi Spasial (python -m scripts.run_simulation)
-   -> Memeriksa pergerakan rute secara intuitif via Matplotlib
-                        │
-                        ▼
-4. Analisis Performa & Trade-off (python -m scripts.run_benchmark)
-   -> Mencatat runtime (ms) dan total steps untuk laporan/TA
-```
+Penulis: Kemal Ardian (251524053), Kelas 2B, bersama kelompok kasus 033, 051, 053, 055.
+Mata kuliah: Matematika Diskrit Lanjut.

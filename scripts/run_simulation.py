@@ -34,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
         "-a",
         "--algorithm",
         default=None,
-        help="Registry key/alias algoritma (mis. pathfinding, spanning_tree).",
+        help="Registry key/alias algoritma (mis. pathfinding).",
     )
     return parser
 

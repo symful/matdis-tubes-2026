@@ -1,0 +1,3863 @@
+{
+  "metadata": {
+    "case_id": "case_01_kobra_banjir",
+    "title": "Kasus 1: Kobra Banjir Path Finding",
+    "author": "Kelas B (033, 051, 053, 055), Kota Bekasi, Januari 2020",
+    "algorithm": "StaticDijkstra"
+  },
+  "total_steps": 76,
+  "initial_topology": {
+    "nodes": [
+      {
+        "id": 0,
+        "label": "Gerbang Green Residence 1, Jl. Edelweis I (Titik A)",
+        "pos": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "id": 1,
+        "label": "Simpang Edelweis I - Taman Raya",
+        "pos": [
+          30.7,
+          -7.0
+        ]
+      },
+      {
+        "id": 2,
+        "label": "Simpang Taman Raya - Edelweis Raya",
+        "pos": [
+          37.8,
+          22.8
+        ]
+      },
+      {
+        "id": 3,
+        "label": "Simpang Taman Raya - Kav Bumi Mandiri",
+        "pos": [
+          68.1,
+          152.8
+        ]
+      },
+      {
+        "id": 4,
+        "label": "Simpang Kav Bumi Mandiri - Kampung Rawa Kalong",
+        "pos": [
+          68.5,
+          183.5
+        ]
+      },
+      {
+        "id": 5,
+        "label": "Simpang Kampung Rawa Kalong - Karang Satria Raya",
+        "pos": [
+          115.2,
+          360.3
+        ]
+      },
+      {
+        "id": 6,
+        "label": "Simpang Karang Satria Raya - Gang Kantor Desa",
+        "pos": [
+          -600.8,
+          486.5
+        ]
+      },
+      {
+        "id": 7,
+        "label": "Kantor Desa Karangsatria, Jl. Karang Satria Raya (Titik B)",
+        "pos": [
+          -604.6,
+          517.7
+        ]
+      },
+      {
+        "id": 8,
+        "label": "Simpang Taman Raya - Kemuning Raya",
+        "pos": [
+          14.2,
+          -66.8
+        ]
+      },
+      {
+        "id": 9,
+        "label": "Simpang Kemuning Raya - Mista Raya",
+        "pos": [
+          -227.9,
+          -1.1
+        ]
+      },
+      {
+        "id": 10,
+        "label": "Simpang Mista Raya - Kampung Rawa Kalong",
+        "pos": [
+          -179.6,
+          119.7
+        ]
+      },
+      {
+        "id": 11,
+        "label": "Simpang Edelweis I - Edelweis III",
+        "pos": [
+          -43.7,
+          10.9
+        ]
+      },
+      {
+        "id": 12,
+        "label": "Simpang Edelweis III - Edelweis Raya",
+        "pos": [
+          -36.9,
+          42.3
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": 0,
+        "to": 1,
+        "weight": 0.42,
+        "street": "Jl. Edelweis I",
+        "distance_m": 31.5
+      },
+      {
+        "from": 0,
+        "to": 11,
+        "weight": 0.6,
+        "street": "Jl. Edelweis I (selatan)",
+        "distance_m": 45.0
+      },
+      {
+        "from": 1,
+        "to": 0,
+        "weight": 0.42,
+        "street": "Jl. Edelweis I",
+        "distance_m": 31.5
+      },
+      {
+        "from": 1,
+        "to": 2,
+        "weight": 0.41,
+        "street": "Jl. Taman Raya",
+        "distance_m": 30.7
+      },
+      {
+        "from": 1,
+        "to": 8,
+        "weight": 0.83,
+        "street": "Jl. Taman Raya (selatan)",
+        "distance_m": 62.2
+      },
+      {
+        "from": 2,
+        "to": 1,
+        "weight": 0.41,
+        "street": "Jl. Taman Raya",
+        "distance_m": 30.7
+      },
+      {
+        "from": 2,
+        "to": 3,
+        "weight": 1.69,
+        "street": "Jl. Taman Raya",
+        "distance_m": 126.9
+      },
+      {
+        "from": 2,
+        "to": 12,
+        "weight": 1.03,
+        "street": "Jl. Edelweis Raya",
+        "distance_m": 77.1
+      },
+      {
+        "from": 3,
+        "to": 2,
+        "weight": 1.69,
+        "street": "Jl. Taman Raya",
+        "distance_m": 126.9
+      },
+      {
+        "from": 3,
+        "to": 4,
+        "weight": 0.33,
+        "street": "Gang penghubung (tanpa nama)",
+        "distance_m": 24.7
+      },
+      {
+        "from": 4,
+        "to": 3,
+        "weight": 0.33,
+        "street": "Gang penghubung (tanpa nama)",
+        "distance_m": 24.7
+      },
+      {
+        "from": 4,
+        "to": 5,
+        "weight": 2.15,
+        "street": "Jl. Kampung Rawa Kalong",
+        "distance_m": 161.4,
+        "flooded": true
+      },
+      {
+        "from": 4,
+        "to": 10,
+        "weight": 3.13,
+        "street": "Jl. Kampung Rawa Kalong (utara)",
+        "distance_m": 234.8
+      },
+      {
+        "from": 5,
+        "to": 4,
+        "weight": 2.15,
+        "street": "Jl. Kampung Rawa Kalong",
+        "distance_m": 161.4,
+        "flooded": true
+      },
+      {
+        "from": 5,
+        "to": 6,
+        "weight": 9.35,
+        "street": "Jl. Karang Satria Raya",
+        "distance_m": 701.0
+      },
+      {
+        "from": 6,
+        "to": 5,
+        "weight": 9.35,
+        "street": "Jl. Karang Satria Raya",
+        "distance_m": 701.0
+      },
+      {
+        "from": 6,
+        "to": 7,
+        "weight": 0.32,
+        "street": "Gang Kantor Desa (tanpa nama)",
+        "distance_m": 24.0
+      },
+      {
+        "from": 7,
+        "to": 6,
+        "weight": 0.32,
+        "street": "Gang Kantor Desa (tanpa nama)",
+        "distance_m": 24.0
+      },
+      {
+        "from": 8,
+        "to": 1,
+        "weight": 0.83,
+        "street": "Jl. Taman Raya (selatan)",
+        "distance_m": 62.2
+      },
+      {
+        "from": 8,
+        "to": 9,
+        "weight": 3.31,
+        "street": "Jl. Kemuning Raya",
+        "distance_m": 247.9
+      },
+      {
+        "from": 9,
+        "to": 8,
+        "weight": 3.31,
+        "street": "Jl. Kemuning Raya",
+        "distance_m": 247.9
+      },
+      {
+        "from": 9,
+        "to": 10,
+        "weight": 1.74,
+        "street": "Jl. Mista Raya",
+        "distance_m": 130.4
+      },
+      {
+        "from": 10,
+        "to": 9,
+        "weight": 1.74,
+        "street": "Jl. Mista Raya",
+        "distance_m": 130.4
+      },
+      {
+        "from": 10,
+        "to": 4,
+        "weight": 3.13,
+        "street": "Jl. Kampung Rawa Kalong (utara)",
+        "distance_m": 234.8
+      },
+      {
+        "from": 11,
+        "to": 0,
+        "weight": 0.6,
+        "street": "Jl. Edelweis I (selatan)",
+        "distance_m": 45.0
+      },
+      {
+        "from": 11,
+        "to": 12,
+        "weight": 0.43,
+        "street": "Jl. Edelweis III",
+        "distance_m": 32.2
+      },
+      {
+        "from": 12,
+        "to": 11,
+        "weight": 0.43,
+        "street": "Jl. Edelweis III",
+        "distance_m": 32.2
+      },
+      {
+        "from": 12,
+        "to": 2,
+        "weight": 1.03,
+        "street": "Jl. Edelweis Raya",
+        "distance_m": 77.1
+      }
+    ]
+  },
+  "raw_quantitative_trace": [
+    {
+      "step": 1,
+      "event_type": "BLOCK_INJECTED",
+      "mutations": {
+        "target_edge": [
+          9,
+          10
+        ],
+        "entity_id": "S1",
+        "blocked_nodes": [],
+        "blocked_edges": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "step": 2,
+      "event_type": "BLOCK_INJECTED",
+      "mutations": {
+        "target_node": 9,
+        "entity_id": "K2",
+        "blocked_nodes": [
+          9
+        ],
+        "blocked_edges": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "step": 3,
+      "event_type": "UPDATE_WEIGHT_EVENT",
+      "mutations": {
+        "target_edge": [
+          4,
+          5
+        ],
+        "old_weight": 2.15,
+        "new_weight": 6.45,
+        "entity_id": "F1"
+      }
+    },
+    {
+      "step": 4,
+      "event_type": "INITIALIZATION",
+      "mutations": {
+        "start_node": 0,
+        "distance_table": {
+          "0": 0,
+          "1": "inf",
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "priority_queue": [
+          [
+            0,
+            0
+          ]
+        ],
+        "blocked_nodes": [
+          9
+        ],
+        "blocked_edges": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "step": 5,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          1
+        ],
+        "edge_weight": 0.42,
+        "old_dist": "inf",
+        "new_dist": 0.42,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": null,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 6,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          11
+        ],
+        "edge_weight": 0.6,
+        "old_dist": "inf",
+        "new_dist": 0.6,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ],
+          [
+            0.6,
+            11
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 7,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          2
+        ],
+        "edge_weight": 0.41,
+        "old_dist": "inf",
+        "new_dist": 0.83,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 8,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          8
+        ],
+        "edge_weight": 0.83,
+        "old_dist": "inf",
+        "new_dist": 1.25,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 9,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 11,
+        "evaluated_edge": [
+          11,
+          12
+        ],
+        "edge_weight": 0.43,
+        "old_dist": "inf",
+        "new_dist": 1.03,
+        "priority_queue": [
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            1.03,
+            12
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 10,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 2,
+        "evaluated_edge": [
+          2,
+          3
+        ],
+        "edge_weight": 1.69,
+        "old_dist": "inf",
+        "new_dist": 2.52,
+        "priority_queue": [
+          [
+            1.03,
+            12
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            2.52,
+            3
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 11,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 3,
+        "evaluated_edge": [
+          3,
+          4
+        ],
+        "edge_weight": 0.33,
+        "old_dist": "inf",
+        "new_dist": 2.85,
+        "priority_queue": [
+          [
+            2.85,
+            4
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 12,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 4,
+        "evaluated_edge": [
+          4,
+          5
+        ],
+        "edge_weight": 6.45,
+        "old_dist": "inf",
+        "new_dist": 9.3,
+        "priority_queue": [
+          [
+            9.3,
+            5
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 13,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 4,
+        "evaluated_edge": [
+          4,
+          10
+        ],
+        "edge_weight": 3.13,
+        "old_dist": "inf",
+        "new_dist": 5.98,
+        "priority_queue": [
+          [
+            5.98,
+            10
+          ],
+          [
+            9.3,
+            5
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 14,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 5,
+        "evaluated_edge": [
+          5,
+          6
+        ],
+        "edge_weight": 9.35,
+        "old_dist": "inf",
+        "new_dist": 18.65,
+        "priority_queue": [
+          [
+            18.65,
+            6
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": 18.65,
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": 5,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 15,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 6,
+        "evaluated_edge": [
+          6,
+          7
+        ],
+        "edge_weight": 0.32,
+        "old_dist": "inf",
+        "new_dist": 18.97,
+        "priority_queue": [
+          [
+            18.97,
+            7
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": 18.65,
+          "7": 18.97,
+          "8": 1.25,
+          "9": "inf",
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": 5,
+          "7": 6,
+          "8": 1,
+          "9": null,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 16,
+      "event_type": "PATH_FOUND",
+      "mutations": {
+        "target_node": 7,
+        "active_path": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "total_cost": 18.97,
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": 18.65,
+          "7": 18.97,
+          "8": 1.25,
+          "9": "inf",
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "blocked_nodes": [
+          9
+        ],
+        "blocked_edges": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "step": 17,
+      "event_type": "BLOCK_INJECTED",
+      "mutations": {
+        "target_node": 3,
+        "entity_id": "K1",
+        "blocked_nodes": [
+          3,
+          9
+        ],
+        "blocked_edges": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "step": 18,
+      "event_type": "INITIALIZATION",
+      "mutations": {
+        "start_node": 0,
+        "distance_table": {
+          "0": 0,
+          "1": "inf",
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "priority_queue": [
+          [
+            0,
+            0
+          ]
+        ],
+        "blocked_nodes": [
+          3,
+          9
+        ],
+        "blocked_edges": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "step": 19,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          1
+        ],
+        "edge_weight": 0.42,
+        "old_dist": "inf",
+        "new_dist": 0.42,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": null,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 20,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          11
+        ],
+        "edge_weight": 0.6,
+        "old_dist": "inf",
+        "new_dist": 0.6,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ],
+          [
+            0.6,
+            11
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 21,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          2
+        ],
+        "edge_weight": 0.41,
+        "old_dist": "inf",
+        "new_dist": 0.83,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 22,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          8
+        ],
+        "edge_weight": 0.83,
+        "old_dist": "inf",
+        "new_dist": 1.25,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 23,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 11,
+        "evaluated_edge": [
+          11,
+          12
+        ],
+        "edge_weight": 0.43,
+        "old_dist": "inf",
+        "new_dist": 1.03,
+        "priority_queue": [
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            1.03,
+            12
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 24,
+      "event_type": "PATH_NOT_FOUND",
+      "mutations": {
+        "start_node": 0,
+        "goal_node": 7,
+        "reason": "goal tidak terjangkau dari keadaan saat ini",
+        "blocked_nodes": [
+          3,
+          9
+        ],
+        "blocked_edges": [
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            9
+          ]
+        ]
+      }
+    },
+    {
+      "step": 25,
+      "event_type": "BLOCK_REMOVED",
+      "mutations": {
+        "target_edge": [
+          9,
+          10
+        ],
+        "entity_id": "S1",
+        "blocked_nodes": [
+          3,
+          9
+        ],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 26,
+      "event_type": "INITIALIZATION",
+      "mutations": {
+        "start_node": 0,
+        "distance_table": {
+          "0": 0,
+          "1": "inf",
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "priority_queue": [
+          [
+            0,
+            0
+          ]
+        ],
+        "blocked_nodes": [
+          3,
+          9
+        ],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 27,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          1
+        ],
+        "edge_weight": 0.42,
+        "old_dist": "inf",
+        "new_dist": 0.42,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": null,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 28,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          11
+        ],
+        "edge_weight": 0.6,
+        "old_dist": "inf",
+        "new_dist": 0.6,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ],
+          [
+            0.6,
+            11
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 29,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          2
+        ],
+        "edge_weight": 0.41,
+        "old_dist": "inf",
+        "new_dist": 0.83,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 30,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          8
+        ],
+        "edge_weight": 0.83,
+        "old_dist": "inf",
+        "new_dist": 1.25,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 31,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 11,
+        "evaluated_edge": [
+          11,
+          12
+        ],
+        "edge_weight": 0.43,
+        "old_dist": "inf",
+        "new_dist": 1.03,
+        "priority_queue": [
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            1.03,
+            12
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 32,
+      "event_type": "PATH_NOT_FOUND",
+      "mutations": {
+        "start_node": 0,
+        "goal_node": 7,
+        "reason": "goal tidak terjangkau dari keadaan saat ini",
+        "blocked_nodes": [
+          3,
+          9
+        ],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 33,
+      "event_type": "BLOCK_REMOVED",
+      "mutations": {
+        "target_node": 9,
+        "entity_id": "K2",
+        "blocked_nodes": [
+          3
+        ],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 34,
+      "event_type": "INITIALIZATION",
+      "mutations": {
+        "start_node": 0,
+        "distance_table": {
+          "0": 0,
+          "1": "inf",
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "priority_queue": [
+          [
+            0,
+            0
+          ]
+        ],
+        "blocked_nodes": [
+          3
+        ],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 35,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          1
+        ],
+        "edge_weight": 0.42,
+        "old_dist": "inf",
+        "new_dist": 0.42,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": null,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 36,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          11
+        ],
+        "edge_weight": 0.6,
+        "old_dist": "inf",
+        "new_dist": 0.6,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ],
+          [
+            0.6,
+            11
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 37,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          2
+        ],
+        "edge_weight": 0.41,
+        "old_dist": "inf",
+        "new_dist": 0.83,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 38,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          8
+        ],
+        "edge_weight": 0.83,
+        "old_dist": "inf",
+        "new_dist": 1.25,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 39,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 11,
+        "evaluated_edge": [
+          11,
+          12
+        ],
+        "edge_weight": 0.43,
+        "old_dist": "inf",
+        "new_dist": 1.03,
+        "priority_queue": [
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            1.03,
+            12
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 40,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 8,
+        "evaluated_edge": [
+          8,
+          9
+        ],
+        "edge_weight": 3.31,
+        "old_dist": "inf",
+        "new_dist": 4.5600000000000005,
+        "priority_queue": [
+          [
+            4.5600000000000005,
+            9
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 41,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 9,
+        "evaluated_edge": [
+          9,
+          10
+        ],
+        "edge_weight": 1.74,
+        "old_dist": "inf",
+        "new_dist": 6.300000000000001,
+        "priority_queue": [
+          [
+            6.300000000000001,
+            10
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 6.300000000000001,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 9,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 42,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 10,
+        "evaluated_edge": [
+          10,
+          4
+        ],
+        "edge_weight": 3.13,
+        "old_dist": "inf",
+        "new_dist": 9.43,
+        "priority_queue": [
+          [
+            9.43,
+            4
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": 9.43,
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 6.300000000000001,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": 10,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 9,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 43,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 4,
+        "evaluated_edge": [
+          4,
+          5
+        ],
+        "edge_weight": 6.45,
+        "old_dist": "inf",
+        "new_dist": 15.879999999999999,
+        "priority_queue": [
+          [
+            15.879999999999999,
+            5
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": 9.43,
+          "5": 15.879999999999999,
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 6.300000000000001,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": 10,
+          "5": 4,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 9,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 44,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 5,
+        "evaluated_edge": [
+          5,
+          6
+        ],
+        "edge_weight": 9.35,
+        "old_dist": "inf",
+        "new_dist": 25.229999999999997,
+        "priority_queue": [
+          [
+            25.229999999999997,
+            6
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": 9.43,
+          "5": 15.879999999999999,
+          "6": 25.229999999999997,
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 6.300000000000001,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": 10,
+          "5": 4,
+          "6": 5,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 9,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 45,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 6,
+        "evaluated_edge": [
+          6,
+          7
+        ],
+        "edge_weight": 0.32,
+        "old_dist": "inf",
+        "new_dist": 25.549999999999997,
+        "priority_queue": [
+          [
+            25.549999999999997,
+            7
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": 9.43,
+          "5": 15.879999999999999,
+          "6": 25.229999999999997,
+          "7": 25.549999999999997,
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 6.300000000000001,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": 10,
+          "5": 4,
+          "6": 5,
+          "7": 6,
+          "8": 1,
+          "9": 8,
+          "10": 9,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 46,
+      "event_type": "PATH_FOUND",
+      "mutations": {
+        "target_node": 7,
+        "active_path": [
+          0,
+          1,
+          8,
+          9,
+          10,
+          4,
+          5,
+          6,
+          7
+        ],
+        "total_cost": 25.549999999999997,
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": 9.43,
+          "5": 15.879999999999999,
+          "6": 25.229999999999997,
+          "7": 25.549999999999997,
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 6.300000000000001,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "blocked_nodes": [
+          3
+        ],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 47,
+      "event_type": "BLOCK_REMOVED",
+      "mutations": {
+        "target_node": 3,
+        "entity_id": "K1",
+        "blocked_nodes": [],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 48,
+      "event_type": "INITIALIZATION",
+      "mutations": {
+        "start_node": 0,
+        "distance_table": {
+          "0": 0,
+          "1": "inf",
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "priority_queue": [
+          [
+            0,
+            0
+          ]
+        ],
+        "blocked_nodes": [],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 49,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          1
+        ],
+        "edge_weight": 0.42,
+        "old_dist": "inf",
+        "new_dist": 0.42,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": null,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 50,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          11
+        ],
+        "edge_weight": 0.6,
+        "old_dist": "inf",
+        "new_dist": 0.6,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ],
+          [
+            0.6,
+            11
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 51,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          2
+        ],
+        "edge_weight": 0.41,
+        "old_dist": "inf",
+        "new_dist": 0.83,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 52,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          8
+        ],
+        "edge_weight": 0.83,
+        "old_dist": "inf",
+        "new_dist": 1.25,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 53,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 11,
+        "evaluated_edge": [
+          11,
+          12
+        ],
+        "edge_weight": 0.43,
+        "old_dist": "inf",
+        "new_dist": 1.03,
+        "priority_queue": [
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            1.03,
+            12
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 54,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 2,
+        "evaluated_edge": [
+          2,
+          3
+        ],
+        "edge_weight": 1.69,
+        "old_dist": "inf",
+        "new_dist": 2.52,
+        "priority_queue": [
+          [
+            1.03,
+            12
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            2.52,
+            3
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 55,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 8,
+        "evaluated_edge": [
+          8,
+          9
+        ],
+        "edge_weight": 3.31,
+        "old_dist": "inf",
+        "new_dist": 4.5600000000000005,
+        "priority_queue": [
+          [
+            2.52,
+            3
+          ],
+          [
+            4.5600000000000005,
+            9
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 56,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 3,
+        "evaluated_edge": [
+          3,
+          4
+        ],
+        "edge_weight": 0.33,
+        "old_dist": "inf",
+        "new_dist": 2.85,
+        "priority_queue": [
+          [
+            2.85,
+            4
+          ],
+          [
+            4.5600000000000005,
+            9
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 57,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 4,
+        "evaluated_edge": [
+          4,
+          5
+        ],
+        "edge_weight": 6.45,
+        "old_dist": "inf",
+        "new_dist": 9.3,
+        "priority_queue": [
+          [
+            4.5600000000000005,
+            9
+          ],
+          [
+            9.3,
+            5
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 58,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 4,
+        "evaluated_edge": [
+          4,
+          10
+        ],
+        "edge_weight": 3.13,
+        "old_dist": "inf",
+        "new_dist": 5.98,
+        "priority_queue": [
+          [
+            4.5600000000000005,
+            9
+          ],
+          [
+            9.3,
+            5
+          ],
+          [
+            5.98,
+            10
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 59,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 5,
+        "evaluated_edge": [
+          5,
+          6
+        ],
+        "edge_weight": 9.35,
+        "old_dist": "inf",
+        "new_dist": 18.65,
+        "priority_queue": [
+          [
+            18.65,
+            6
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": 18.65,
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": 5,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 60,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 6,
+        "evaluated_edge": [
+          6,
+          7
+        ],
+        "edge_weight": 0.32,
+        "old_dist": "inf",
+        "new_dist": 18.97,
+        "priority_queue": [
+          [
+            18.97,
+            7
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": 18.65,
+          "7": 18.97,
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": 5,
+          "7": 6,
+          "8": 1,
+          "9": 8,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 61,
+      "event_type": "PATH_FOUND",
+      "mutations": {
+        "target_node": 7,
+        "active_path": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "total_cost": 18.97,
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 9.3,
+          "6": 18.65,
+          "7": 18.97,
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "blocked_nodes": [],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 62,
+      "event_type": "UPDATE_WEIGHT_EVENT",
+      "mutations": {
+        "target_edge": [
+          4,
+          5
+        ],
+        "old_weight": 6.45,
+        "new_weight": 2.15,
+        "entity_id": "F1"
+      }
+    },
+    {
+      "step": 63,
+      "event_type": "INITIALIZATION",
+      "mutations": {
+        "start_node": 0,
+        "distance_table": {
+          "0": 0,
+          "1": "inf",
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "priority_queue": [
+          [
+            0,
+            0
+          ]
+        ],
+        "blocked_nodes": [],
+        "blocked_edges": []
+      }
+    },
+    {
+      "step": 64,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          1
+        ],
+        "edge_weight": 0.42,
+        "old_dist": "inf",
+        "new_dist": 0.42,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": "inf",
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": null,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 65,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 0,
+        "evaluated_edge": [
+          0,
+          11
+        ],
+        "edge_weight": 0.6,
+        "old_dist": "inf",
+        "new_dist": 0.6,
+        "priority_queue": [
+          [
+            0.42,
+            1
+          ],
+          [
+            0.6,
+            11
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": "inf",
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": null,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 66,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          2
+        ],
+        "edge_weight": 0.41,
+        "old_dist": "inf",
+        "new_dist": 0.83,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": "inf",
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": null,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 67,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 1,
+        "evaluated_edge": [
+          1,
+          8
+        ],
+        "edge_weight": 0.83,
+        "old_dist": "inf",
+        "new_dist": 1.25,
+        "priority_queue": [
+          [
+            0.6,
+            11
+          ],
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": "inf"
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": null
+        }
+      }
+    },
+    {
+      "step": 68,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 11,
+        "evaluated_edge": [
+          11,
+          12
+        ],
+        "edge_weight": 0.43,
+        "old_dist": "inf",
+        "new_dist": 1.03,
+        "priority_queue": [
+          [
+            0.83,
+            2
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            1.03,
+            12
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": "inf",
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": null,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 69,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 2,
+        "evaluated_edge": [
+          2,
+          3
+        ],
+        "edge_weight": 1.69,
+        "old_dist": "inf",
+        "new_dist": 2.52,
+        "priority_queue": [
+          [
+            1.03,
+            12
+          ],
+          [
+            1.25,
+            8
+          ],
+          [
+            2.52,
+            3
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": "inf",
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": null,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 70,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 8,
+        "evaluated_edge": [
+          8,
+          9
+        ],
+        "edge_weight": 3.31,
+        "old_dist": "inf",
+        "new_dist": 4.5600000000000005,
+        "priority_queue": [
+          [
+            2.52,
+            3
+          ],
+          [
+            4.5600000000000005,
+            9
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": "inf",
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": null,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 71,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 3,
+        "evaluated_edge": [
+          3,
+          4
+        ],
+        "edge_weight": 0.33,
+        "old_dist": "inf",
+        "new_dist": 2.85,
+        "priority_queue": [
+          [
+            2.85,
+            4
+          ],
+          [
+            4.5600000000000005,
+            9
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": "inf",
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": null,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 72,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 4,
+        "evaluated_edge": [
+          4,
+          5
+        ],
+        "edge_weight": 2.15,
+        "old_dist": "inf",
+        "new_dist": 5.0,
+        "priority_queue": [
+          [
+            4.5600000000000005,
+            9
+          ],
+          [
+            5.0,
+            5
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 5.0,
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": "inf",
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": null,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 73,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 4,
+        "evaluated_edge": [
+          4,
+          10
+        ],
+        "edge_weight": 3.13,
+        "old_dist": "inf",
+        "new_dist": 5.98,
+        "priority_queue": [
+          [
+            4.5600000000000005,
+            9
+          ],
+          [
+            5.0,
+            5
+          ],
+          [
+            5.98,
+            10
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 5.0,
+          "6": "inf",
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": null,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 74,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 5,
+        "evaluated_edge": [
+          5,
+          6
+        ],
+        "edge_weight": 9.35,
+        "old_dist": "inf",
+        "new_dist": 14.35,
+        "priority_queue": [
+          [
+            5.98,
+            10
+          ],
+          [
+            14.35,
+            6
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 5.0,
+          "6": 14.35,
+          "7": "inf",
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": 5,
+          "7": null,
+          "8": 1,
+          "9": 8,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 75,
+      "event_type": "RELAX_EDGE",
+      "mutations": {
+        "current_node": 6,
+        "evaluated_edge": [
+          6,
+          7
+        ],
+        "edge_weight": 0.32,
+        "old_dist": "inf",
+        "new_dist": 14.67,
+        "priority_queue": [
+          [
+            14.67,
+            7
+          ]
+        ],
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 5.0,
+          "6": 14.35,
+          "7": 14.67,
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "parent_table": {
+          "0": null,
+          "1": 0,
+          "2": 1,
+          "3": 2,
+          "4": 3,
+          "5": 4,
+          "6": 5,
+          "7": 6,
+          "8": 1,
+          "9": 8,
+          "10": 4,
+          "11": 0,
+          "12": 11
+        }
+      }
+    },
+    {
+      "step": 76,
+      "event_type": "PATH_FOUND",
+      "mutations": {
+        "target_node": 7,
+        "active_path": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "total_cost": 14.67,
+        "distance_table": {
+          "0": 0,
+          "1": 0.42,
+          "2": 0.83,
+          "3": 2.52,
+          "4": 2.85,
+          "5": 5.0,
+          "6": 14.35,
+          "7": 14.67,
+          "8": 1.25,
+          "9": 4.5600000000000005,
+          "10": 5.98,
+          "11": 0.6,
+          "12": 1.03
+        },
+        "blocked_nodes": [],
+        "blocked_edges": []
+      }
+    }
+  ]
+}

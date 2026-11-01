@@ -1,4 +1,4 @@
-# Kemal Ardian — 251524053 — 2B
+# Kemal Ardian, 251524053, Kelas 2B
 # Ambil rute jalan kaki asli dari OpenStreetMap (Nominatim + OSRM foot)
 # lalu simpan sebagai graph JSON untuk Kasus 1: Kobra Banjir Path Finding.
 # Rute langsung A->B diambil sebagai koridor utama; bila config punya via_query,

@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# OpenStreetMap fetch (opsional: token/key lokal jika suatu saat dipakai)
+config/maps_key.json

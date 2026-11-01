@@ -1,56 +1,62 @@
 # Panduan Bahasa Semantic Logging (Versi Membumi & Terukur)
 
-Dokumen ini berisi panduan penulisan `action_narrative` pada log JSON agar mudah dibaca oleh mahasiswa, dosen, maupun pembaca umum.
+Dokumen ini berisi panduan penulisan narasi pada log JSON agar mudah dibaca oleh
+mahasiswa, dosen, dan pembaca umum. Kasus aktif: Kasus 1 Kobra Banjir Path Finding.
 
-Gunakan bahasa sehari-hari yang membumi, tetapi **selalu cantumkan perubahan angkanya** dan **hindari kata-kata yang berlebihan/hiperbolik** (seperti: *parah banget, membludak, super cepat*).
+Gunakan bahasa sehari-hari yang membumi, tetapi **selalu cantumkan angkanya** dan
+**hindari kata-kata berlebihan** (seperti: *parah banget, membludak, super cepat*).
 
 ---
 
 ## 1. Kata Kerja Proses Utama (Action Verbs)
 
-Gunakan istilah proses sehari-hari yang sudah biasa dipakai saat ngoding:
-
-* **Inisialisasi / Setup (`INITIALIZE`)**: Persiapan awal graf dan variabel.
-  * *Contoh:* `"Set jarak awal Pos Damkar (Node 0) = 0, node lainnya = infinity."`
-* **Cek Tetangga (`EVALUATE`)**: Memeriksa jalan/gang yang terhubung dari posisi saat ini.
-  * *Contoh:* `"Mengecek jalan dari Node 0 ke Node 2 (Gang B) dengan jarak 2 meter."`
+* **Inisialisasi / Setup (`INITIALIZATION`)**: Persiapan awal graf dan variabel.
+  * *Contoh:* `"Set jarak awal Gerbang Green Residence 1 (Node 0) = 0, node lainnya = infinity. Keadaan awal: sampah S1 menutup Jl. Mista Raya, kobra diam K2 di node 9, genangan F1 di ruas 4-5."`
+* **Cek Tetangga (`EVALUATE` / `RELAX_EDGE`)**: Memeriksa jalan/gang yang terhubung dari posisi saat ini.
+  * *Contoh:* `"Mengecek jalan dari Simpang Taman Raya (Node 2) ke Simpang Kav Bumi Mandiri (Node 3) dengan waktu 1,69 menit."`
 * **Perbarui Jarak (`RELAX / UPDATE`)**: Menemukan jalan yang lebih cepat/pendek.
-  * *Contoh:* `"Jarak ke Simpang (Node 3) diperbarui dari infinity menjadi 3 meter lewat Gang B."`
-* **Ubah Bobot Jalan (`UPDATE_WEIGHT`)**: Perubahan kondisi jalan akibat kejadian di lapangan.
-  * *Contoh:* `"Bobot Gang B (Edge 2 -> 3) naik dari 1 menjadi 50 karena ada kerumunan warga."`
-* **Hitung Ulang Rute (`RECALCULATE`)**: Algoritma mencari jalan memutar karena rute lama tersumbat.
-  * *Contoh:* `"Rute lama tersumbat. Algoritma menghitung ulang rute dari Pos Damkar."`
+  * *Contoh:* `"Waktu ke Simpang Rawa Kalong (Node 5) diperbarui dari infinity menjadi 2,38 menit lewat Jl. Kampung Rawa Kalong."`
+* **Blokir Jalan / Simpul (`BLOCK_INJECTED`)**: Blocker muncul atau menempati simpul/ruas.
+  * *Contoh:* `"Kelompok kobra K1 (6 ekor) menempati Simpang Taman Raya (Node 3). Ruas masuk dan keluar node ditutup."`
+* **Buka Blokir (`BLOCK_REMOVED`)**: Blocker dicabut (sampah dibersihkan, kobra diusir).
+  * *Contoh:* `"Sampah S1 dibersihkan. Jl. Mista Raya (ruas 9-10) dibuka kembali dua arah."`
+* **Ubah Bobot Jalan (`UPDATE_WEIGHT_EVENT`)**: Kondisi jalan berubah (genangan, surut).
+  * *Contoh:* `"Bobot Jl. Kampung Rawa Kalong (ruas 4-5) naik dari 2,15 jadi 6,45 menit karena genangan banjir 3 kali. Ruas masih bisa dilalui jalan kaki."`
+* **Hitung Ulang Rute (`RECALCULATE`)**: Algoritma mencari jalan memutar karena keadaan berubah.
+  * *Contoh:* `"Koridor utama terputus di Simpang Taman Raya. Algoritma menghitung ulang rute dari Titik A."`
 * **Rute Ditemukan (`PATH_FOUND`)**: Jalur terbaik sudah didapatkan.
-  * *Contoh:* `"Rute terbaik ditemukan: [0, 1, 3, 4] dengan total jarak 10 meter."`
-
----
+  * *Contoh:* `"Rute aman ditemukan: [0, 1, 8, 9, 10, 4, 5, 6, 7] dengan total waktu 25,55 menit (memutar via Jl. Kemuning Raya dan Jl. Mista Raya)."`
+* **Rute Tidak Ditemukan (`PATH_NOT_FOUND`)**: Goal tidak terjangkau pada keadaan aktif.
+  * *Contoh:* `"TIDAK ADA RUTE AMAN. Koridor utama ditempati kobra K1 dan koridor alternatif ditutup sampah S1 serta kobra diam K2."`
 
 ## 2. Contoh Perbandingan Kalimat Log
 
-Berikut adalah contoh cara merubah kalimat agar membumi namun tetap terukur:
+### Kasus 1: Kobra Bergerombol di Simpang
 
-### Kasus 1: Hambatan Kerumunan Warga
+* ❌ **Terlalu Kaku/Akademis:** `"BLOCK_NODE injected on vertex 3 due to entity K1 occupancy window [2,4]."`
+* ❌ **Hiperbolik:** `"Puluhan kobra mengerumuni simpang, jalur evakuasi hancur total!"`
+* ✅ **Membumi & Terukur:** `"Kobra bergerombol K1 (6 ekor) menempati Simpang Taman Raya (Node 3) sejak step 2. Rute via koridor utama terputus; solver menghitung ulang dari Titik A."`
 
-* ❌ **Terlalu Kaku/Akademis:** `"INJECT_SPATIAL_PENALTY on edge (2, 3): Weight updated from 1.0 to 50.0."`
-* ❌ **Hiperbolik:** `"Gang B macet parah banget gara-gara penonton membludak!"`
-* ✅ **Membumi & Terukur:** `"Bobot Gang B (Edge 2 -> 3) naik dari 1 jadi 50 karena kerumunan warga. Algoritma menghitung ulang rute."`
+### Kasus 2: Sampah Dibersihkan
 
-### Kasus 2: Penemuan Rute Baru
-
-* ❌ **Terlalu Kaku/Akademis:** `"RECONSTRUCT_PATH yields sequence [0, 1, 3, 4] with accumulated_cost=10.0."`
-* ❌ **Hiperbolik:** `"Damkar berhasil menemukan rute ajaib yang super cepat melompati kemacetan!"`
-* ✅ **Membumi & Terukur:** `"Rute baru dipilih memutar lewat Gang A [0, 1, 3, 4] dengan total waktu 10 menit (lebih cepat dibanding lewat Gang B yang totalnya 54 menit)."`
-
----
+* ❌ **Terlalu Kaku:** `"UNBLOCK_EDGE executed on (9,10); forbidden set cardinality decremented."`
+* ❌ **Hiperbolik:** `"Akhirnya sampah dibersihkan, jalan jadi lancar jaya!"`
+* ✅ **Membumi & Terukur:** `"Sampah S1 di Jl. Mista Raya (ruas 9-10) dibersihkan pada step 3. Koridor alternatif via Kemuning Raya tinggal menunggu kobra diam K2 diusir."`
 
 ## 3. Aturan Sederhana untuk Mahasiswa
 
 1. **Gunakan Bahasa Indonesia / Inggris Santai yang Jelas.**
-2. **Sebutkan Nama Tempatnya:** Gunakan label tempat seperti `Pos Damkar`, `Gang A`, bukan cuma `Node 0`.
-3. **Selalu Tulis Angkanya:** Jangan cuma bilang *"jaraknya bertambah"*, tapi tulis *"jarak naik dari 2 jadi 50"*.
+2. **Sebutkan Nama Tempatnya:** Gunakan label tempat seperti `Simpang Taman Raya`, `Jl. Kampung Rawa Kalong`, bukan cuma `Node 3`.
+3. **Selalu Tulis Angkanya:** Jangan cuma bilang *waktunya lebih lama*, tapi tulis *waktu naik dari 2,15 jadi 6,45 menit*.
+4. **Sebutkan Id Entitasnya:** `K1`, `K2`, `S1`, `F1` supaya log bisa ditelusuri ke bagian `entities` YAML.
 
 ## 4. Contoh System Prompt untuk Gemini
-```
-  Kamu adalah asisten pengajar Matematika Diskrit. Berikut adalah data JSON hasil trace algoritma Dijkstra (kuantitatif) dan file YAML skenario. Tolong buatkan kolom action_narrative di setiap step menggunakan bahasa Indonesia yang membumi, komunikatif, sebutkan nama tempatnya dari label YAML, dan sebutkan perubahan angkanya tanpa kata-kata hiperbolik.
-```
 
+```text
+Kamu adalah asisten pengajar Matematika Diskrit. Berikut adalah data JSON hasil trace
+Dijkstra (kuantitatif) dan file YAML skenario Kasus 1 Kobra Banjir. Tolong buat
+kolom action_narrative di setiap step dengan bahasa Indonesia yang membumi dan
+terukur: sebutkan nama tempat dari label YAML, sebutkan id entitas (K1, K2, S1, F1),
+dan sebutkan perubahan angkanya tanpa kata-kata hiperbolik. Untuk keadaan tanpa rute,
+gunakan kalimat "TIDAK ADA RUTE AMAN" beserta alasan blockernya.
+```

@@ -17,7 +17,7 @@ class ConsoleReportObserver(SimulationObserver):
 
     def on_reroute(self, result: SimulationResult, reroute: RerouteResult) -> None:
         print(
-            f"\n[EVENT INJECTED] step {reroute.event_type} | {reroute.description}"
+            f"\n[EVENT INJECTED] {reroute.event_type} | {reroute.description}"
         )
         if reroute.path:
             print(f"-> Rute Baru  : {reroute.path} (Cost: {reroute.cost})")
