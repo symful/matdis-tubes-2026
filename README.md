@@ -160,7 +160,6 @@ matdis-tubes-2026/
 python -m scripts.run_simulation
 
 # Benchmark
-python -m scripts.run_benchmark
 
 # Ambil ulang graf dari OpenStreetMap (tanpa API key)
 python scripts/fetch_route_maps.py
@@ -181,7 +180,7 @@ Prioritas pemilihan algoritma: argumen CLI `--algorithm` → key `algorithm` di 
   `DYNAMIC_EDGE_WEIGHT`.
 - Keluaran tanpa rute: `path = []`, `cost = inf` (TIDAK ADA RUTE AMAN).
 
-Detail skema dan clarifications: lihat [SOAL.md](SOAL.md) dan [TUTORIAL.md](TUTORIAL.md).
+Detail skema dan clarifications: lihat [SOAL.md](SOAL.md).
 
 ---
 
