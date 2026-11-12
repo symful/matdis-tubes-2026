@@ -13,11 +13,11 @@
   },
   "direct": {
     "total_distance_m": 1186.1,
-    "total_duration_min": 15.81
+    "total_duration_min": 15.85
   },
   "via": {
     "total_distance_m": 1579.3,
-    "total_duration_min": 21.05
+    "total_duration_min": 21.09
   },
   "nodes": [
     {
@@ -167,7 +167,7 @@
       "to": 6,
       "street": "Jalan Lingkungan",
       "distance_m": 45.7,
-      "duration_min": 0.61,
+      "duration_min": 0.64,
       "corridor": "utama"
     },
     {

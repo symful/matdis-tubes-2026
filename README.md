@@ -252,5 +252,5 @@ target, serta path output JSON.
 
 ---
 
-Penulis: Kemal Ardian (251524053), Kelas 2B, bersama kelompok kasus 033, 051, 053, 055.
+Penulis: Kemal Ardian (251524053), Ahmad Bukhori (251524033), Hasan Nasrullah (251524051), dan Muhammad Akhtar Khawarizmi (251524055), Kelas 2B.
 Mata kuliah: Matematika Diskrit Lanjut.

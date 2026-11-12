@@ -1,0 +1,120 @@
+{
+  "base_scenario": "cases/scenarios/case_01_kobra_banjir.yaml",
+  "default_author": "Kemal Ardian (251524053), Ahmad Bukhori (251524033), Hasan Nasrullah (251524051), Muhammad Akhtar Khawarizmi (251524055), Kelas 2B",
+  "variants": [
+    {
+      "id": "case_02_jalur_normal",
+      "title": "Kasus 2: Jalur Normal Tanpa Blocker",
+      "description": "Graf yang sama tanpa kobra, sampah, maupun genangan. Rute terpendek menjadi acuan dasar sebelum blocker dimasukkan.",
+      "entities": {},
+      "events": [],
+      "note": "Rute 0-1-2-3-4-5-6-7 sepanjang 1100,2 meter dengan waktu 14,67 menit."
+    },
+    {
+      "id": "case_03_blocker_statis",
+      "title": "Kasus 3: Blocker Statis Memutus Semua Jalur",
+      "description": "Kobra kelompok K1 diam di Simpang Taman Raya, kobra K2 diam di Simpang Kemuning Raya, dan sampah S1 menutup Jl. Mista Raya. Tidak ada blokir yang berpindah, tetapi seluruh jalur ke Kantor Desa terputus.",
+      "entities": {
+        "snakes": [
+          {
+            "id": "K1",
+            "label": "Kelompok kobra di Simpang Taman Raya",
+            "kind": "kelompok",
+            "group_size": 6,
+            "movable": false,
+            "windows": [{"from_step": 0, "to_step": 99, "node": 3}]
+          },
+          {
+            "id": "K2",
+            "label": "Kobra diam di Simpang Kemuning Raya",
+            "kind": "tunggal",
+            "group_size": 1,
+            "movable": false,
+            "windows": [{"from_step": 0, "to_step": 99, "node": 9}]
+          }
+        ],
+        "trash": [
+          {
+            "id": "S1",
+            "label": "Tumpukan sampah di Jl. Mista Raya",
+            "edge": [9, 10],
+            "coverage": "full",
+            "movable": false,
+            "clearable": false
+          }
+        ]
+      },
+      "events": [
+        {"step": 0, "type": "BLOCK_NODE", "entity_id": "K1", "target_node": 3, "description": "Kobra kelompok K1 menutup Simpang Taman Raya."},
+        {"step": 0, "type": "BLOCK_NODE", "entity_id": "K2", "target_node": 9, "description": "Kobra K2 menutup Simpang Kemuning Raya."},
+        {"step": 0, "type": "BLOCK_EDGE", "entity_id": "S1", "target_edge": [9, 10], "description": "Sampah S1 menutup penuh Jl. Mista Raya."}
+      ],
+      "note": "Keadaan awal sudah tidak memiliki rute aman karena koridor utama dan koridor alternatif sama-sama terputus."
+    },
+    {
+      "id": "case_04_kobra_dinamik",
+      "title": "Kasus 4: Kobra Bergerombol Lalu Diusir",
+      "description": "Sampah S1 dan kobra K2 tetap sejak awal. Kobra kelompok K1 datang ke Simpang Taman Raya pada step 2 lalu diusir pada step 4 sehingga rute aman sempat hilang dan pulih kembali.",
+      "entities": {
+        "snakes": [
+          {
+            "id": "K1",
+            "label": "Kelompok kobra di Simpang Taman Raya",
+            "kind": "kelompok",
+            "group_size": 6,
+            "movable": true,
+            "windows": [{"from_step": 2, "to_step": 3, "node": 3}]
+          },
+          {
+            "id": "K2",
+            "label": "Kobra diam di Simpang Kemuning Raya",
+            "kind": "tunggal",
+            "group_size": 1,
+            "movable": false,
+            "windows": [{"from_step": 0, "to_step": 99, "node": 9}]
+          }
+        ],
+        "trash": [
+          {
+            "id": "S1",
+            "label": "Tumpukan sampah di Jl. Mista Raya",
+            "edge": [9, 10],
+            "coverage": "full",
+            "movable": false,
+            "clearable": false
+          }
+        ]
+      },
+      "events": [
+        {"step": 0, "type": "BLOCK_NODE", "entity_id": "K2", "target_node": 9, "description": "Kobra K2 menutup Simpang Kemuning Raya."},
+        {"step": 0, "type": "BLOCK_EDGE", "entity_id": "S1", "target_edge": [9, 10], "description": "Sampah S1 menutup penuh Jl. Mista Raya."},
+        {"step": 2, "type": "BLOCK_NODE", "entity_id": "K1", "target_node": 3, "description": "Kobra kelompok K1 bergerombol di Simpang Taman Raya."},
+        {"step": 4, "type": "UNBLOCK_NODE", "entity_id": "K1", "target_node": 3, "description": "Tim rescue mengusir kobra K1 dari Simpang Taman Raya."}
+      ],
+      "note": "Awal 14,67 menit. Step 2 tidak ada rute aman. Step 4 kembali 14,67 menit."
+    },
+    {
+      "id": "case_05_banjir_surut",
+      "title": "Kasus 5: Genangan Membengkak Lalu Surut",
+      "description": "Hanya genangan F1 yang aktif. Waktu tempuh Jl. Kampung Rawa Kalong membengkak tiga kali pada step 0 lalu kembali normal saat banjir surut pada step 3.",
+      "entities": {
+        "flood": [
+          {
+            "id": "F1",
+            "label": "Genangan banjir di Jl. Kampung Rawa Kalong",
+            "submerged_edges": [[4, 5]],
+            "depth_cm": 80,
+            "surge_factor": 3.0,
+            "passable": true,
+            "window": {"from_step": 0, "to_step": 2}
+          }
+        ]
+      },
+      "events": [
+        {"step": 0, "type": "DYNAMIC_EDGE_WEIGHT", "entity_id": "F1", "target_edge": [4, 5], "new_weight": 6.45, "description": "Genangan F1 melonjakkan waktu tempuh ruas 4-5."},
+        {"step": 3, "type": "DYNAMIC_EDGE_WEIGHT", "entity_id": "F1", "target_edge": [4, 5], "new_weight": 2.15, "description": "Banjir surut dan bobot ruas 4-5 kembali normal."}
+      ],
+      "note": "Awal 18,97 menit. Setelah surut 14,67 menit."
+    }
+  ]
+}

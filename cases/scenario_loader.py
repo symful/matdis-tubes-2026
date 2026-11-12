@@ -6,14 +6,17 @@ from core.graph_model import SpatialGraphModel
 
 class ScenarioLoader:
 
-    METADATA_KEYS = ("case_id", "title", "description", "author")
+    METADATA_KEYS = ("case_id", "title", "description", "author", "group")
     NODE_BLOCK_TYPES = ("BLOCK_NODE", "UNBLOCK_NODE")
     EDGE_BLOCK_TYPES = ("BLOCK_EDGE", "UNBLOCK_EDGE")
     WEIGHT_TYPES = ("DYNAMIC_EDGE_WEIGHT",)
 
-    def __init__(self, yaml_file_path: Union[str, Path]):
-        with open(yaml_file_path, "r", encoding="utf-8") as f:
-            self.data = yaml.safe_load(f)
+    def __init__(self, yaml_file_path: Union[str, Path, Dict[str, Any]]):
+        if isinstance(yaml_file_path, dict):
+            self.data = yaml_file_path
+        else:
+            with open(yaml_file_path, "r", encoding="utf-8") as f:
+                self.data = yaml.safe_load(f)
 
     def get_metadata(self) -> Dict[str, Any]:
         metadata = self.data.get("metadata")
