@@ -144,15 +144,19 @@ matdis-tubes-2026/
 ├── README.md                   # dokumen ini
 ├── .python-version             # 3.12
 ├── requirements.txt            # networkx, pyyaml, pandas, openpyxl, pytest
+├── requirements-qt.txt         # PySide6 untuk aplikasi visual
 ├── config/
 │   ├── settings.py             # path, skenario default, band target fetch
-│   └── maps.json               # konfigurasi OpenStreetMap (query, band jarak)
+│   ├── maps.json               # konfigurasi OpenStreetMap (query, band jarak)
+│   └── case_variants.json      # varian kasus runtime di atas skenario dasar
 ├── cases/
 │   ├── scenario_loader.py      # YAML → graf + validasi kontrak scoped
 │   ├── fishbone_parser.py      # fishbone YAML → tabel/markdown
 │   └── scenarios/
-│       ├── case_01_kobra_banjir.yaml       # kasus tunggal, fully scoped
-│       └── case_01_kobra_banjir.graph.json # bahan baku fetch OSM
+│       ├── case_00_contoh_mini.yaml        # contoh mini abstrak dari SOAL
+│       ├── case_01_kobra_banjir.yaml       # kasus utama, fully scoped
+│       ├── case_01_kobra_banjir.graph.json # bahan baku fetch OSM
+│       └── case_01_kobra_banjir.network.json # jaringan jalan sekitar (Overpass)
 ├── algorithms/
 │   ├── registry.py             # registry algoritma + alias
 │   └── pathfinding/
@@ -164,10 +168,18 @@ matdis-tubes-2026/
 │   ├── simulation_runner.py    # SimulationRunner + observer hooks
 │   ├── simulation_observers.py # ConsoleReport, VisualizerSnapshot, TraceExport
 │   └── visualizer.py           # SimpleGraphVisualizer (matplotlib)
+├── visual/
+│   ├── README.md               # panduan aplikasi desktop
+│   ├── qt_app.py               # MainWindow, toolbar, pemutaran, ekspor PNG
+│   ├── canvas.py               # kanvas graf, kompas, skala, legenda
+│   ├── scenarios.py            # daftar kasus dari YAML + varian runtime
+│   ├── snapshots.py            # rekaman keadaan dan pemuat jaringan jalan
+│   ├── timeline.py             # kartu langkah simulasi
+│   └── info_panel.py           # metrik, penjelasan, dan rincian rute
 ├── scripts/
 │   ├── run_simulation.py       # jalankan simulasi + ekspor trace JSON
 │   ├── cli_utils.py            # collect_scenario_paths
-│   └── fetch_route_maps.py     # ambil rute jalan kaki dari OpenStreetMap
+│   └── fetch_route_maps.py     # ambil rute dan jaringan jalan sekitar dari OSM
 ├── tests/
 │   ├── test_scenario_loader.py # loader, validasi, graf dua arah
 │   ├── test_fishbone_parser.py # parser 6M/non-6M, markdown
@@ -184,11 +196,15 @@ matdis-tubes-2026/
 # Simulasi kasus 1 (default), ekspor trace ke output/
 python -m scripts.run_simulation
 
-# Ambil ulang graf dari OpenStreetMap (tanpa API key)
+# Ambil rute dan jaringan jalan sekitar dari OpenStreetMap (tanpa API key)
 python scripts/fetch_route_maps.py
 
 # Test otomatis
 pytest
+
+# Pasang dependensi visual lalu jalankan aplikasi desktop
+pip install -r requirements-qt.txt
+python -m visual.qt_app
 ```
 
 CLI `scripts/run_simulation.py` menerima argumen tambahan:
@@ -199,6 +215,30 @@ CLI `scripts/run_simulation.py` menerima argumen tambahan:
 
 Prioritas pemilihan algoritma: argumen CLI `--algorithm` → key `algorithm` di YAML →
 `DEFAULT_ALGORITHM` di `config/settings.py`.
+
+### Visualisasi desktop (PySide6)
+
+`python -m visual.qt_app` membuka jendela interaktif untuk graf yang sama. Rute,
+blocker, dan bobot ruas dihitung oleh `StaticDijkstra` yang sama, lalu direkam per
+keadaan oleh `SnapshotRecorder`.
+
+- Peta menampilkan nama jalan yang diputar mengikuti arah ruas, nama simpang,
+  kompas, skala meter, rute aman berpanah, ruas terblokir bergaris putus-putus,
+  ruas tergenang, dan badge entitas pada node atau ruas yang menjadi target event.
+- Enam kasus dapat dipilih: contoh mini dari SOAL, kasus kobra banjir lengkap, jalur
+  normal, blocker statis, kobra dinamis, dan genangan yang surut. Kasus tambahan
+  dibangun saat aplikasi berjalan dari `config/case_variants.json`, bukan dari YAML
+  duplikat, sehingga menambah kasus cukup menambah satu entri konfigurasi.
+- Lapisan jalan sekitar hasil Overpass ditampilkan di belakang graf dan bisa
+  dinyalakan atau dimatikan lewat tombol `Jaringan OSM`. Bila berkas jaringan belum
+  ada, aplikasi tetap berjalan tanpa lapisan tersebut.
+- Timeline kartu per langkah, pemutaran otomatis, panel penjelasan tiga paragraf,
+  daftar ruas yang dilalui beserta bobotnya, serta ekspor tangkapan kanvas ke PNG.
+- Pintasan: `kiri/kanan` langkah, `spasi` putar atau jeda, `Home`/`End`, `F` fit,
+  `Ctrl+O` buka skenario. Klik node untuk melihat label, koordinat, dan posisinya.
+
+Argumen opsional: `python -m visual.qt_app path/ke/skenario.yaml`. Panduan lebih
+rinci ada di [`visual/README.md`](visual/README.md).
 
 ---
 
@@ -246,9 +286,15 @@ Suite pytest terdiri dari 4 berkas:
 - `DEFAULT_SCENARIO_BATCH = []` (kosong, pakai default skenario).
 - `SCENARIO_FILE_PATTERNS = ("*.yaml", "*.yml")`.
 
-`config/maps.json` menyimpan konfigurasi fetch OpenStreetMap: endpoint Nominatim
-dan OSRM foot, user agent, query origin/destination/via, band jarak dan durasi
-target, serta path output JSON.
+`config/maps.json` menyimpan konfigurasi fetch OpenStreetMap: endpoint Nominatim,
+OSRM foot, dan Overpass, user agent, query origin/destination/via, band jarak dan
+durasi target, padding serta daftar jenis jalan untuk jaringan sekitar, dan path
+output JSON.
+
+`config/case_variants.json` mendefinisikan kasus tambahan yang dibangun saat runtime
+di atas `case_01_kobra_banjir.yaml`. Isinya adalah `base_scenario`, `default_author`,
+dan daftar `variants` dengan metadata, `entities`, serta `events`. Aplikasi visual
+membaca konfigurasi ini langsung, sehingga tidak perlu menyimpan YAML varian.
 
 ---
 
